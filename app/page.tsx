@@ -9,7 +9,13 @@ export default function Home() {
       {/* Left Section */}
       <div className="w-full lg:w-1/2 bg-gradient-to-br from-aveyo-blue to-aveyo-purple p-8 md:p-16 flex flex-col min-h-screen">
         <div className="mb-8 lg:mb-12">
-          <h1 className="text-2xl font-bold text-gray-800">AVEYO</h1>
+          <Image 
+            src="/aveyo-logo.svg" 
+            alt="AVEYO" 
+            width={112} 
+            height={24}
+            priority
+          />
         </div>
         
         <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full">
