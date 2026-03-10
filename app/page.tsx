@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <main className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Section */}
-      <div className="w-full lg:w-1/2 bg-gradient-to-br from-aveyo-blue to-aveyo-purple p-8 md:p-16 flex flex-col min-h-screen">
+      <div className="w-full lg:w-1/2 bg-white p-8 md:p-16 flex flex-col min-h-screen">
         <div className="mb-8 lg:mb-12">
           <Image 
             src="/aveyo-logo.svg" 
