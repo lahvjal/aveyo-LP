@@ -79,8 +79,8 @@ function FormContent() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-8">
-        <div className="max-w-2xl w-full bg-white rounded-lg shadow-lg p-12 text-center">
+      <div className="min-h-screen bg-white flex items-center justify-center p-8">
+        <div className="max-w-2xl w-full bg-white rounded-lg shadow-lg border border-gray-200 p-12 text-center">
           <div className="text-green-500 text-6xl mb-6">✓</div>
           <h3 className="text-3xl font-bold text-gray-900 mb-4">Thank you for your submission!</h3>
           <p className="text-gray-700 text-lg">Our team is putting together a personalized quote for your home. We&apos;ll be reaching out in 1-2 business days.</p>
@@ -90,7 +90,7 @@ function FormContent() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-8">
+    <div className="min-h-screen bg-white flex items-center justify-center p-8">
       {/* Logo */}
       <div className="fixed top-8 left-8 z-50">
         <Image 
@@ -99,13 +99,12 @@ function FormContent() {
           width={112} 
           height={24}
           priority
-          className="brightness-0 invert"
         />
       </div>
 
       {/* Form Container */}
       <div className="max-w-2xl w-full">
-        <div className="bg-white rounded-lg shadow-2xl p-8 md:p-12">
+        <div className="bg-white rounded-lg shadow-2xl border border-gray-200 p-8 md:p-12">
           {/* Progress Bar */}
           <div className="mb-8">
             <div className="w-full bg-gray-200 rounded-full h-2">
@@ -350,8 +349,8 @@ function FormContent() {
 export default function FormPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-gray-900 text-xl">Loading...</div>
       </div>
     }>
       <FormContent />
