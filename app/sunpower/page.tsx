@@ -42,9 +42,9 @@ export default function SunpowerStylePage() {
         
         <div className="relative z-10 mx-auto px-8 py-20 text-white" style={{ maxWidth: '85vw', width: '100%' }}>
           {/* Top Badge */}
-          <div className="flex justify-end mb-8">
+          <div className="flex justify-end mb-8 z-100">
             <div className="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold border border-gray-300">
-              300+ reviews<br />in Illinois
+              <span style={{ color: '#3498db' }}>300+</span> reviews<br />in Illinois
               <div className="text-gray-700">★★★★★</div>
             </div>
           </div>

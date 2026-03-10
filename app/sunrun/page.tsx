@@ -46,6 +46,7 @@ export default function SunrunPage() {
       {/* Right Section - Hero Image */}
       <div className="hidden lg:block lg:w-1/2 relative min-h-screen">
         <div className="absolute inset-0 bg-gradient-to-bl from-transparent to-aveyo-blue opacity-20 z-10"></div>
+        
         <Image
           src="/photo1.jpg"
           alt="Family enjoying time together at home"
@@ -53,6 +54,14 @@ export default function SunrunPage() {
           className="object-cover"
           priority
         />
+
+        {/* Badge - Bottom Right */}
+        <div className="absolute bottom-8 right-8 z-20">
+          <div className="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold border border-gray-300 shadow-lg">
+            <span style={{ color: '#3498db' }}>300+</span> reviews<br />in Illinois
+            <div className="text-gray-700">★★★★★</div>
+          </div>
+        </div>
       </div>
     </main>
   )
