@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 export default function SunpowerStylePage() {
@@ -19,7 +20,7 @@ export default function SunpowerStylePage() {
     <div className="min-h-screen">
       {/* Navigation Bar */}
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-8 py-4">
+        <div className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
           <Image 
             src="/aveyo-logo.svg" 
             alt="AVEYO" 
@@ -28,18 +29,22 @@ export default function SunpowerStylePage() {
             priority
             className="brightness-0 invert"
           />
+          <Link href="/" className="text-white hover:text-gray-300 transition-colors flex items-center gap-2">
+            <span className="text-xl">←</span>
+            <span className="text-sm">Back</span>
+          </Link>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/family-movienight.png)' }}>
+      <section className="relative min-h-screen flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(/photo2.jpg)' }}>
         <div className="absolute inset-0 bg-black/40"></div>
         
         <div className="relative z-10 mx-auto px-8 py-20 text-white" style={{ maxWidth: '85vw', width: '100%' }}>
           {/* Top Badge */}
           <div className="flex justify-end mb-8">
             <div className="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold border border-gray-300">
-              Top-Rated Solar<br />in the U.S.
+              300+ reviews<br />in Illinois
               <div className="text-gray-700">★★★★★</div>
             </div>
           </div>

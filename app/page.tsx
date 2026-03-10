@@ -1,14 +1,12 @@
-'use client'
-
-import MultiStepForm from '@/components/MultiStepForm'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col lg:flex-row">
-      {/* Left Section */}
-      <div className="w-full lg:w-1/2 bg-white p-8 md:p-16 flex flex-col min-h-screen">
-        <div className="mb-8 lg:mb-12">
+    <main className="min-h-screen bg-white p-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="mb-12">
           <Image 
             src="/aveyo-logo.svg" 
             alt="AVEYO" 
@@ -17,29 +15,56 @@ export default function Home() {
             priority
           />
         </div>
-        
-        <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Powering what matters most
-          </h2>
-          <p className="text-gray-700 mb-8">
-            Changing your energy changes your life. Get predictable monthly bills and more to spend on what truly matters.
-          </p>
-          
-          <MultiStepForm />
-        </div>
-      </div>
 
-      {/* Right Section - Hero Image */}
-      <div className="hidden lg:block lg:w-1/2 relative min-h-screen">
-        <div className="absolute inset-0 bg-gradient-to-bl from-transparent to-aveyo-blue opacity-20 z-10"></div>
-        <Image
-          src="/family-movienight.png"
-          alt="Family enjoying time together at home"
-          fill
-          className="object-cover"
-          priority
-        />
+        {/* Page Title */}
+        <div className="mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Landing Pages Directory
+          </h1>
+          <p className="text-gray-700 text-lg">
+            Select a landing page to preview
+          </p>
+        </div>
+
+        {/* Landing Pages Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Sunrun Page */}
+          <Link href="/sunrun" className="group">
+            <div className="border-2 border-gray-200 rounded-lg p-6 hover:border-black transition-colors">
+              <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-black">
+                Sunrun
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Multi-step form with gradient background and hero image
+              </p>
+              <div className="text-sm text-gray-500">
+                6-step form • White background • Family image
+              </div>
+            </div>
+          </Link>
+
+          {/* Sunpower Page */}
+          <Link href="/sunpower" className="group">
+            <div className="border-2 border-gray-200 rounded-lg p-6 hover:border-black transition-colors">
+              <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-black">
+                Sunpower
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Full-screen hero with transparent nav and ZIP entry
+              </p>
+              <div className="text-sm text-gray-500">
+                Hero page • Black & white • Full-screen form flow
+              </div>
+            </div>
+          </Link>
+        </div>
+
+        {/* Footer Info */}
+        <div className="mt-16 pt-8 border-t border-gray-200">
+          <p className="text-gray-500 text-sm">
+            This is a temporary navigation page for development. Each card above links to a different landing page variant.
+          </p>
+        </div>
       </div>
     </main>
   )
