@@ -1,4 +1,4 @@
-export default function SunrunLayout({
+export default function LP3Layout({
   children,
 }: {
   children: React.ReactNode

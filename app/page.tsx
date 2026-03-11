@@ -28,11 +28,11 @@ export default function Home() {
 
         {/* Landing Pages Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Sunrun Page */}
-          <Link href="/sunrun" className="group">
+          {/* LP1 Page */}
+          <Link href="/lp1" className="group">
             <div className="border-2 border-gray-200 rounded-lg p-6 hover:border-black transition-colors">
               <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-black">
-                Sunrun
+                LP1
               </h3>
               <p className="text-gray-600 mb-4">
                 Multi-step form with gradient background and hero image
@@ -43,11 +43,11 @@ export default function Home() {
             </div>
           </Link>
 
-          {/* Sunpower Page */}
-          <Link href="/sunpower" className="group">
+          {/* LP2 Page */}
+          <Link href="/lp2" className="group">
             <div className="border-2 border-gray-200 rounded-lg p-6 hover:border-black transition-colors">
               <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-black">
-                Sunpower
+                LP2
               </h3>
               <p className="text-gray-600 mb-4">
                 Full-screen hero with transparent nav and ZIP entry
@@ -58,11 +58,11 @@ export default function Home() {
             </div>
           </Link>
 
-          {/* All-in-One Page */}
-          <Link href="/all-in-one" className="group">
+          {/* LP3 Page */}
+          <Link href="/lp3" className="group">
             <div className="border-2 border-gray-200 rounded-lg p-6 hover:border-black transition-colors">
               <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-black">
-                All-in-One
+                LP3
               </h3>
               <p className="text-gray-600 mb-4">
                 Single-page form with all questions visible at once

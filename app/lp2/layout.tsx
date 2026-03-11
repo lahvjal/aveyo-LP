@@ -1,4 +1,4 @@
-export default function AllInOneLayout({
+export default function LP2Layout({
   children,
 }: {
   children: React.ReactNode

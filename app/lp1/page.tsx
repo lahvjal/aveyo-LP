@@ -4,7 +4,7 @@ import MultiStepForm from '@/components/MultiStepForm'
 import Image from 'next/image'
 import Link from 'next/link'
 
-export default function SunrunPage() {
+export default function LP1Page() {
   return (
     <main className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Section */}

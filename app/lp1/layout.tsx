@@ -1,4 +1,4 @@
-export default function SunpowerLayout({
+export default function LP1Layout({
   children,
 }: {
   children: React.ReactNode
