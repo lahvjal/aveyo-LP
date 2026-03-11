@@ -1,6 +1,6 @@
 {
   "description": "Example payload sent to API endpoint on form submission",
-  "endpoint": "POST https://your-api-endpoint.com/api/leads",
+  "endpoint": "POST https://services.leadconnectorhq.com/hooks/mokTV2l2U2keZ6Co3vx1/webhook-trigger/53d2f869-ff50-4a7e-a22b-a1231c3372af",
   "headers": {
     "Content-Type": "application/json"
   },

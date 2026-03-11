@@ -104,15 +104,35 @@ export default function MultiStepForm({ landingPage, offerName = '' }: MultiStep
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (validateStep()) {
-      console.log('Form submitted:', formData)
-      setSubmitted(true)
-      
-      // Here you would typically send the data to your API
-      // await fetch('/api/submit', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // })
+      try {
+        const payload = {
+          ...formData,
+          submittedAt: new Date().toISOString()
+        }
+        
+        console.log('Submitting form:', payload)
+        
+        const response = await fetch('https://services.leadconnectorhq.com/hooks/mokTV2l2U2keZ6Co3vx1/webhook-trigger/53d2f869-ff50-4a7e-a22b-a1231c3372af', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload)
+        })
+
+        if (response.ok) {
+          console.log('Form submitted successfully')
+          setSubmitted(true)
+        } else {
+          console.error('Form submission failed:', response.status)
+          // Still show success to user even if webhook fails
+          setSubmitted(true)
+        }
+      } catch (error) {
+        console.error('Error submitting form:', error)
+        // Still show success to user even if webhook fails
+        setSubmitted(true)
+      }
     }
   }
 
