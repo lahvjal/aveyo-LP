@@ -42,9 +42,9 @@ export default function LP1Page() {
       </div>
 
       {/* Left Section */}
-      <div className="bg-white p-8 md:p-16 flex flex-col min-h-screen w-full lg:w-[65vw]">
+      <div className="bg-white p-8 md:p-16 lg:p-12 xl:p-16 flex flex-col min-h-screen w-full lg:w-1/2">
         {/* Desktop Navbar - Only shows on desktop */}
-        <div className="hidden lg:flex mb-8 lg:mb-12 items-center justify-between">
+        <div className="hidden lg:flex mb-8 lg:mb-12 items-center justify-between max-w-4xl mx-auto w-full">
           <Image 
             src="/aveyo-logo.svg" 
             alt="AVEYO" 
@@ -58,7 +58,7 @@ export default function LP1Page() {
           </Link>
         </div>
         
-        <div className="flex-1 flex flex-col lg:justify-center mx-auto w-full max-w-md lg:w-[90%] lg:max-w-none">
+        <div className="flex-1 flex flex-col lg:justify-center mx-auto w-full max-w-md lg:max-w-xl xl:max-w-2xl">
           <h2
             className="mb-4 text-gray-900 text-5xl md:text-6xl lg:text-7xl"
             style={{
