@@ -1,0 +1,160 @@
+{
+  "formFields": {
+    "userInputFields": {
+      "zipCode": {
+        "type": "text",
+        "required": true,
+        "validation": "Must be exactly 5 digits",
+        "format": "string",
+        "example": "60601"
+      },
+      "homeOwnership": {
+        "type": "radio",
+        "required": true,
+        "options": [
+          "yes",
+          "no"
+        ],
+        "example": "yes"
+      },
+      "electricBill": {
+        "type": "radio",
+        "required": true,
+        "options": [
+          "$0 - $100",
+          "$100 - $150",
+          "$150 - $200",
+          "$200 - $300",
+          "$300+"
+        ],
+        "example": "$150 - $200"
+      },
+      "email": {
+        "type": "email",
+        "required": true,
+        "validation": "Must be valid email format",
+        "format": "string",
+        "example": "john.smith@example.com"
+      },
+      "firstName": {
+        "type": "text",
+        "required": true,
+        "validation": "Must not be empty",
+        "format": "string",
+        "example": "John"
+      },
+      "lastName": {
+        "type": "text",
+        "required": true,
+        "validation": "Must not be empty",
+        "format": "string",
+        "example": "Smith"
+      },
+      "phone": {
+        "type": "tel",
+        "required": true,
+        "validation": "Must be at least 10 digits",
+        "format": "string (digits only, no spaces, dashes, or parentheses)",
+        "example": "3125551234"
+      }
+    },
+    "trackingFields": {
+      "landing_page": {
+        "type": "auto-populated",
+        "required": true,
+        "options": [
+          "1",
+          "2",
+          "3"
+        ],
+        "description": "Landing page number",
+        "example": "1"
+      },
+      "offer_name": {
+        "type": "auto-populated",
+        "required": true,
+        "options": [
+          "Powering What Matters Most",
+          "Go Solar With $0 Down",
+          "Your Solar Journey Starts Here"
+        ],
+        "description": "Offer headline based on landing page",
+        "mapping": {
+          "1": "Powering What Matters Most",
+          "2": "Go Solar With $0 Down",
+          "3": "Your Solar Journey Starts Here"
+        },
+        "example": "Powering What Matters Most"
+      },
+      "utm_source": {
+        "type": "url-parameter",
+        "required": false,
+        "format": "string",
+        "default": "",
+        "description": "Traffic source (e.g., google, facebook, instagram)",
+        "example": "google"
+      },
+      "utm_campaign": {
+        "type": "url-parameter",
+        "required": false,
+        "format": "string",
+        "default": "",
+        "description": "Campaign identifier",
+        "example": "solar-illinois-2026"
+      },
+      "utm_adset": {
+        "type": "url-parameter",
+        "required": false,
+        "format": "string",
+        "default": "",
+        "description": "Ad set identifier",
+        "example": "chicago-homeowners"
+      },
+      "utm_ad": {
+        "type": "url-parameter",
+        "required": false,
+        "format": "string",
+        "default": "",
+        "description": "Specific ad identifier",
+        "example": "ad-123"
+      },
+      "fbclid": {
+        "type": "url-parameter",
+        "required": false,
+        "format": "string",
+        "default": "",
+        "description": "Facebook Click ID",
+        "example": "IwAR1234567890abcdefghijklmnop"
+      },
+      "submittedAt": {
+        "type": "auto-generated",
+        "required": true,
+        "format": "ISO 8601 timestamp",
+        "description": "Timestamp when form was submitted",
+        "example": "2026-03-02T15:30:45.123Z"
+      }
+    }
+  },
+  "examplePayload": {
+    "zipCode": "60601",
+    "homeOwnership": "yes",
+    "electricBill": "$150 - $200",
+    "email": "john.smith@example.com",
+    "firstName": "John",
+    "lastName": "Smith",
+    "phone": "3125551234",
+    "landing_page": "1",
+    "offer_name": "Powering What Matters Most",
+    "utm_source": "google",
+    "utm_campaign": "solar-illinois-2026",
+    "utm_adset": "chicago-homeowners",
+    "utm_ad": "ad-123",
+    "fbclid": "",
+    "submittedAt": "2026-03-02T15:30:45.123Z"
+  },
+  "exampleURLs": {
+    "googleAds": "https://yourdomain.com/1?utm_source=google&utm_campaign=solar-illinois&utm_adset=chicago&utm_ad=ad-001",
+    "facebookAds": "https://yourdomain.com/2?utm_source=facebook&utm_campaign=solar-promo&utm_adset=homeowners-35-55&utm_ad=video-ad-1&fbclid=IwAR123456",
+    "instagramAds": "https://yourdomain.com/3?utm_source=instagram&utm_campaign=solar-awareness&utm_adset=illinois-residents&utm_ad=carousel-1"
+  }
+}
