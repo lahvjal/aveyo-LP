@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
-export default function LP2Page() {
+export default function Page2() {
   const [zipCode, setZipCode] = useState('')
   const router = useRouter()
 

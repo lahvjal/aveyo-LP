@@ -28,11 +28,11 @@ export default function Home() {
 
         {/* Landing Pages Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* LP1 Page */}
-          <Link href="/lp1" className="group">
+          {/* Page 1 */}
+          <Link href="/1" className="group">
             <div className="border-2 border-gray-200 rounded-lg p-6 hover:border-black transition-colors">
               <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-black">
-                LP1
+                Landing Page 1
               </h3>
               <p className="text-gray-600 mb-4">
                 Multi-step form with gradient background and hero image
@@ -43,11 +43,11 @@ export default function Home() {
             </div>
           </Link>
 
-          {/* LP2 Page */}
-          <Link href="/lp2" className="group">
+          {/* Page 2 */}
+          <Link href="/2" className="group">
             <div className="border-2 border-gray-200 rounded-lg p-6 hover:border-black transition-colors">
               <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-black">
-                LP2
+                Landing Page 2
               </h3>
               <p className="text-gray-600 mb-4">
                 Full-screen hero with transparent nav and ZIP entry
@@ -58,11 +58,11 @@ export default function Home() {
             </div>
           </Link>
 
-          {/* LP3 Page */}
-          <Link href="/lp3" className="group">
+          {/* Page 3 */}
+          <Link href="/3" className="group">
             <div className="border-2 border-gray-200 rounded-lg p-6 hover:border-black transition-colors">
               <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-black">
-                LP3
+                Landing Page 3
               </h3>
               <p className="text-gray-600 mb-4">
                 Single-page form with all questions visible at once

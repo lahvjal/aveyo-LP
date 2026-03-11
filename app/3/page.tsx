@@ -14,7 +14,7 @@ interface FormData {
   phone: string
 }
 
-export default function LP3Page() {
+export default function Page3() {
   const [formData, setFormData] = useState<FormData>({
     zipCode: '',
     homeOwnership: '',

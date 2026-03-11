@@ -4,7 +4,7 @@ import MultiStepForm from '@/components/MultiStepForm'
 import Image from 'next/image'
 import Link from 'next/link'
 
-export default function LP1Page() {
+export default function Page1() {
   return (
     <main className="min-h-screen flex flex-col lg:flex-row">
       {/* Mobile Hero Image - Shows only on mobile */}

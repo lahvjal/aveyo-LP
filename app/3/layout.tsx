@@ -1,4 +1,4 @@
-export default function LP1Layout({
+export default function Layout3({
   children,
 }: {
   children: React.ReactNode
