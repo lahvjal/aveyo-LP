@@ -57,6 +57,21 @@ export default function Home() {
               </div>
             </div>
           </Link>
+
+          {/* All-in-One Page */}
+          <Link href="/all-in-one" className="group">
+            <div className="border-2 border-gray-200 rounded-lg p-6 hover:border-black transition-colors">
+              <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-black">
+                All-in-One
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Single-page form with all questions visible at once
+              </p>
+              <div className="text-sm text-gray-500">
+                One-page form • Gradient background • Clean layout
+              </div>
+            </div>
+          </Link>
         </div>
 
         {/* Footer Info */}

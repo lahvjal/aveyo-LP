@@ -8,7 +8,7 @@ export default function SunrunPage() {
   return (
     <main className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Section */}
-      <div className="bg-white p-8 md:p-16 flex flex-col min-h-screen" style={{ width: '65vw' }}>
+      <div className="bg-white p-8 md:p-16 flex flex-col min-h-screen w-full lg:w-[65vw]">
         <div className="mb-8 lg:mb-12 flex items-center justify-between">
           <Image 
             src="/aveyo-logo.svg" 
@@ -23,13 +23,12 @@ export default function SunrunPage() {
           </Link>
         </div>
         
-        <div className="flex-1 flex flex-col justify-center mx-auto" style={{ width: '90%' }}>
+        <div className="flex-1 flex flex-col justify-center mx-auto w-full max-w-md lg:w-[90%] lg:max-w-none">
           <h2
-            className="mb-4 text-gray-900"
+            className="mb-4 text-gray-900 text-5xl md:text-6xl lg:text-7xl"
             style={{
-              fontSize: '80px',
               fontWeight: 900,
-              letterSpacing: '-4px',
+              letterSpacing: '-2px',
               lineHeight: '90%',
             }}
           >
