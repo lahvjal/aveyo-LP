@@ -290,7 +290,7 @@ export default function LP3Page() {
         <div className="mt-8 md:mt-12 text-center">
           <div className="inline-flex flex-col sm:flex-row items-center gap-2 sm:gap-3 bg-white rounded-full px-4 md:px-6 py-3 shadow-md">
             <div className="text-yellow-500 text-base md:text-lg">★★★★★</div>
-            <span className="text-gray-700 font-medium text-sm md:text-base">Trusted by 10,000+ homeowners</span>
+            <span className="text-gray-700 font-medium text-sm md:text-base">300+ Reviews in Illinois</span>
           </div>
         </div>
       </main>
