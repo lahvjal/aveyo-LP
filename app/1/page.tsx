@@ -73,7 +73,7 @@ export default function Page1() {
             Changing your energy changes your life. Get predictable monthly bills and more to spend on what truly matters.
           </p>
           
-          <MultiStepForm landingPage="1" offerName="Powering What Matters Most" />
+          <MultiStepForm pageSlug="1" offerName="Powering What Matters Most" />
         </div>
       </div>
 

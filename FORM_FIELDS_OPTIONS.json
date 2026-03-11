@@ -54,12 +54,12 @@
         "type": "tel",
         "required": true,
         "validation": "Must be at least 10 digits",
-        "format": "string (digits only, no spaces, dashes, or parentheses)",
-        "example": "3125551234"
+        "format": "string with +1 prefix (e.g., +13125551234)",
+        "example": "+13125551234"
       }
     },
     "trackingFields": {
-      "landing_page": {
+      "pageSlug": {
         "type": "auto-populated",
         "required": true,
         "options": [
@@ -70,7 +70,7 @@
         "description": "Landing page number",
         "example": "1"
       },
-      "offer_name": {
+      "offerName": {
         "type": "auto-populated",
         "required": true,
         "options": [
@@ -86,7 +86,7 @@
         },
         "example": "Powering What Matters Most"
       },
-      "utm_source": {
+      "utmSource": {
         "type": "url-parameter",
         "required": false,
         "format": "string",
@@ -94,7 +94,7 @@
         "description": "Traffic source (e.g., google, facebook, instagram)",
         "example": "google"
       },
-      "utm_campaign": {
+      "utmCampaign": {
         "type": "url-parameter",
         "required": false,
         "format": "string",
@@ -102,7 +102,7 @@
         "description": "Campaign identifier",
         "example": "solar-illinois-2026"
       },
-      "utm_adset": {
+      "utmAdset": {
         "type": "url-parameter",
         "required": false,
         "format": "string",
@@ -110,7 +110,7 @@
         "description": "Ad set identifier",
         "example": "chicago-homeowners"
       },
-      "utm_ad": {
+      "utmAd": {
         "type": "url-parameter",
         "required": false,
         "format": "string",
@@ -136,19 +136,19 @@
     }
   },
   "examplePayload": {
+    "firstName": "John",
+    "lastName": "Smith",
+    "email": "john.smith@example.com",
+    "phone": "+13125551234",
     "zipCode": "60601",
     "homeOwnership": "yes",
     "electricBill": "$150 - $200",
-    "email": "john.smith@example.com",
-    "firstName": "John",
-    "lastName": "Smith",
-    "phone": "3125551234",
-    "landing_page": "1",
-    "offer_name": "Powering What Matters Most",
-    "utm_source": "google",
-    "utm_campaign": "solar-illinois-2026",
-    "utm_adset": "chicago-homeowners",
-    "utm_ad": "ad-123",
+    "pageSlug": "1",
+    "offerName": "Powering What Matters Most",
+    "utmSource": "google",
+    "utmCampaign": "solar-illinois-2026",
+    "utmAdset": "chicago-homeowners",
+    "utmAd": "ad-123",
     "fbclid": "",
     "submittedAt": "2026-03-02T15:30:45.123Z"
   },

@@ -5,39 +5,37 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 interface FormData {
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
   zipCode: string
   homeOwnership: string
   electricBill: string
-  email: string
-  firstName: string
-  lastName: string
-  phone: string
-  // Tracking fields
-  landing_page: string
-  offer_name: string
-  utm_source: string
-  utm_campaign: string
-  utm_adset: string
-  utm_ad: string
+  pageSlug: string
+  offerName: string
+  utmSource: string
+  utmCampaign: string
+  utmAdset: string
+  utmAd: string
   fbclid: string
 }
 
 export default function Page3() {
   const [formData, setFormData] = useState<FormData>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
     zipCode: '',
     homeOwnership: '',
     electricBill: '',
-    email: '',
-    firstName: '',
-    lastName: '',
-    phone: '',
-    // Tracking fields
-    landing_page: '3',
-    offer_name: 'Your Solar Journey Starts Here',
-    utm_source: '',
-    utm_campaign: '',
-    utm_adset: '',
-    utm_ad: '',
+    pageSlug: '3',
+    offerName: 'Your Solar Journey Starts Here',
+    utmSource: '',
+    utmCampaign: '',
+    utmAdset: '',
+    utmAd: '',
     fbclid: ''
   })
   const [submitted, setSubmitted] = useState(false)
@@ -48,12 +46,12 @@ export default function Page3() {
       const params = new URLSearchParams(window.location.search)
       setFormData(prev => ({
         ...prev,
-        landing_page: '3',
-        offer_name: 'Your Solar Journey Starts Here',
-        utm_source: params.get('utm_source') || '',
-        utm_campaign: params.get('utm_campaign') || '',
-        utm_adset: params.get('utm_adset') || '',
-        utm_ad: params.get('utm_ad') || '',
+        pageSlug: '3',
+        offerName: 'Your Solar Journey Starts Here',
+        utmSource: params.get('utm_source') || '',
+        utmCampaign: params.get('utm_campaign') || '',
+        utmAdset: params.get('utm_adset') || '',
+        utmAd: params.get('utm_ad') || '',
         fbclid: params.get('fbclid') || ''
       }))
     }
@@ -68,7 +66,20 @@ export default function Page3() {
     
     try {
       const payload = {
-        ...formData,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone ? `+1${formData.phone}` : '',
+        zipCode: formData.zipCode,
+        homeOwnership: formData.homeOwnership,
+        electricBill: formData.electricBill,
+        pageSlug: formData.pageSlug,
+        offerName: formData.offerName,
+        utmSource: formData.utmSource,
+        utmCampaign: formData.utmCampaign,
+        utmAdset: formData.utmAdset,
+        utmAd: formData.utmAd,
+        fbclid: formData.fbclid,
         submittedAt: new Date().toISOString()
       }
       

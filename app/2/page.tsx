@@ -23,8 +23,8 @@ export default function Page2() {
       // Pass through all URL parameters plus the page info
       const params = new URLSearchParams(urlParams)
       params.set('zip', zipCode)
-      params.set('landing_page', '2')
-      params.set('offer_name', 'Go Solar With $0 Down')
+      params.set('pageSlug', '2')
+      params.set('offerName', 'Go Solar With $0 Down')
       router.push(`/form?${params.toString()}`)
     }
   }

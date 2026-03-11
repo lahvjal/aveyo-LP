@@ -6,20 +6,19 @@ import { useState, FormEvent, useEffect } from 'react'
 import Image from 'next/image'
 
 interface FormData {
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
   zipCode: string
   homeOwnership: string
   electricBill: string
-  email: string
-  firstName: string
-  lastName: string
-  phone: string
-  // Tracking fields
-  landing_page: string
-  offer_name: string
-  utm_source: string
-  utm_campaign: string
-  utm_adset: string
-  utm_ad: string
+  pageSlug: string
+  offerName: string
+  utmSource: string
+  utmCampaign: string
+  utmAdset: string
+  utmAd: string
   fbclid: string
 }
 
@@ -29,20 +28,19 @@ function FormContent() {
   
   const [currentStep, setCurrentStep] = useState(initialZip ? 2 : 1)
   const [formData, setFormData] = useState<FormData>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
     zipCode: initialZip,
     homeOwnership: '',
     electricBill: '',
-    email: '',
-    firstName: '',
-    lastName: '',
-    phone: '',
-    // Tracking fields
-    landing_page: searchParams.get('landing_page') || '',
-    offer_name: searchParams.get('offer_name') || '',
-    utm_source: searchParams.get('utm_source') || '',
-    utm_campaign: searchParams.get('utm_campaign') || '',
-    utm_adset: searchParams.get('utm_adset') || '',
-    utm_ad: searchParams.get('utm_ad') || '',
+    pageSlug: searchParams.get('pageSlug') || '',
+    offerName: searchParams.get('offerName') || '',
+    utmSource: searchParams.get('utm_source') || '',
+    utmCampaign: searchParams.get('utm_campaign') || '',
+    utmAdset: searchParams.get('utm_adset') || '',
+    utmAd: searchParams.get('utm_ad') || '',
     fbclid: searchParams.get('fbclid') || ''
   })
   const [submitted, setSubmitted] = useState(false)
@@ -90,7 +88,20 @@ function FormContent() {
     if (validateStep()) {
       try {
         const payload = {
-          ...formData,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone ? `+1${formData.phone}` : '',
+          zipCode: formData.zipCode,
+          homeOwnership: formData.homeOwnership,
+          electricBill: formData.electricBill,
+          pageSlug: formData.pageSlug,
+          offerName: formData.offerName,
+          utmSource: formData.utmSource,
+          utmCampaign: formData.utmCampaign,
+          utmAdset: formData.utmAdset,
+          utmAd: formData.utmAd,
+          fbclid: formData.fbclid,
           submittedAt: new Date().toISOString()
         }
         
