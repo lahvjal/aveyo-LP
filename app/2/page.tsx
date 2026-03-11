@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -8,11 +8,24 @@ import { useRouter } from 'next/navigation'
 export default function Page2() {
   const [zipCode, setZipCode] = useState('')
   const router = useRouter()
+  const [urlParams, setUrlParams] = useState('')
+
+  // Capture URL parameters on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setUrlParams(window.location.search)
+    }
+  }, [])
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     if (zipCode.length === 5) {
-      router.push(`/form?zip=${zipCode}`)
+      // Pass through all URL parameters plus the page info
+      const params = new URLSearchParams(urlParams)
+      params.set('zip', zipCode)
+      params.set('landing_page', '2')
+      params.set('offer_name', 'Go Solar With $0 Down')
+      router.push(`/form?${params.toString()}`)
     }
   }
 

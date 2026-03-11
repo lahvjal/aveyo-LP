@@ -2,7 +2,7 @@
 
 import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useEffect } from 'react'
 import Image from 'next/image'
 
 interface FormData {
@@ -13,6 +13,14 @@ interface FormData {
   firstName: string
   lastName: string
   phone: string
+  // Tracking fields
+  landing_page: string
+  offer_name: string
+  utm_source: string
+  utm_campaign: string
+  utm_adset: string
+  utm_ad: string
+  fbclid: string
 }
 
 function FormContent() {
@@ -27,7 +35,15 @@ function FormContent() {
     email: '',
     firstName: '',
     lastName: '',
-    phone: ''
+    phone: '',
+    // Tracking fields
+    landing_page: searchParams.get('landing_page') || '',
+    offer_name: searchParams.get('offer_name') || '',
+    utm_source: searchParams.get('utm_source') || '',
+    utm_campaign: searchParams.get('utm_campaign') || '',
+    utm_adset: searchParams.get('utm_adset') || '',
+    utm_ad: searchParams.get('utm_ad') || '',
+    fbclid: searchParams.get('fbclid') || ''
   })
   const [submitted, setSubmitted] = useState(false)
 

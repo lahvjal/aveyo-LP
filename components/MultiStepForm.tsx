@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useEffect } from 'react'
 
 interface FormData {
   zipCode: string
@@ -10,9 +10,22 @@ interface FormData {
   firstName: string
   lastName: string
   phone: string
+  // Tracking fields
+  landing_page: string
+  offer_name: string
+  utm_source: string
+  utm_campaign: string
+  utm_adset: string
+  utm_ad: string
+  fbclid: string
 }
 
-export default function MultiStepForm() {
+interface MultiStepFormProps {
+  landingPage: string
+  offerName?: string
+}
+
+export default function MultiStepForm({ landingPage, offerName = '' }: MultiStepFormProps) {
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState<FormData>({
     zipCode: '',
@@ -21,9 +34,34 @@ export default function MultiStepForm() {
     email: '',
     firstName: '',
     lastName: '',
-    phone: ''
+    phone: '',
+    // Tracking fields
+    landing_page: landingPage,
+    offer_name: offerName,
+    utm_source: '',
+    utm_campaign: '',
+    utm_adset: '',
+    utm_ad: '',
+    fbclid: ''
   })
   const [submitted, setSubmitted] = useState(false)
+
+  // Extract URL parameters on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      setFormData(prev => ({
+        ...prev,
+        landing_page: landingPage,
+        offer_name: offerName,
+        utm_source: params.get('utm_source') || '',
+        utm_campaign: params.get('utm_campaign') || '',
+        utm_adset: params.get('utm_adset') || '',
+        utm_ad: params.get('utm_ad') || '',
+        fbclid: params.get('fbclid') || ''
+      }))
+    }
+  }, [landingPage, offerName])
 
   const totalSteps = 6
   const progress = (currentStep / totalSteps) * 100

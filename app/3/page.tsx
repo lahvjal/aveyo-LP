@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -12,6 +12,14 @@ interface FormData {
   firstName: string
   lastName: string
   phone: string
+  // Tracking fields
+  landing_page: string
+  offer_name: string
+  utm_source: string
+  utm_campaign: string
+  utm_adset: string
+  utm_ad: string
+  fbclid: string
 }
 
 export default function Page3() {
@@ -22,9 +30,34 @@ export default function Page3() {
     email: '',
     firstName: '',
     lastName: '',
-    phone: ''
+    phone: '',
+    // Tracking fields
+    landing_page: '3',
+    offer_name: 'Your Solar Journey Starts Here',
+    utm_source: '',
+    utm_campaign: '',
+    utm_adset: '',
+    utm_ad: '',
+    fbclid: ''
   })
   const [submitted, setSubmitted] = useState(false)
+
+  // Extract URL parameters on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      setFormData(prev => ({
+        ...prev,
+        landing_page: '3',
+        offer_name: 'Your Solar Journey Starts Here',
+        utm_source: params.get('utm_source') || '',
+        utm_campaign: params.get('utm_campaign') || '',
+        utm_adset: params.get('utm_adset') || '',
+        utm_ad: params.get('utm_ad') || '',
+        fbclid: params.get('fbclid') || ''
+      }))
+    }
+  }, [])
 
   const updateFormData = (field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
