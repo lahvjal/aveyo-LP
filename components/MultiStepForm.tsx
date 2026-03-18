@@ -8,6 +8,8 @@ interface FormData {
   email: string
   phone: string
   zipCode: string
+  address: string
+  city: string
   homeOwnership: string
   electricBill: string
   pageSlug: string
@@ -32,6 +34,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
     email: '',
     phone: '',
     zipCode: '',
+    address: '',
+    city: '',
     homeOwnership: '',
     electricBill: '',
     pageSlug: pageSlug,
@@ -109,6 +113,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           email: formData.email,
           phone: formData.phone ? `+1${formData.phone}` : '',
           zipCode: formData.zipCode,
+          address: formData.address,
+          city: formData.city,
           homeOwnership: formData.homeOwnership,
           electricBill: formData.electricBill,
           pageSlug: formData.pageSlug,
