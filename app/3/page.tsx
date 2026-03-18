@@ -147,7 +147,7 @@ export default function Page3() {
       <section className="relative h-[400px] md:h-[500px] flex items-center justify-center mb-[-50px]">
         <div className="absolute inset-0 bg-black/50 z-10"></div>
         <Image
-          src="/aveyo-home.png"
+          src="/aveyo-home.jpg"
           alt="Solar panels on modern home"
           fill
           className="object-cover"
