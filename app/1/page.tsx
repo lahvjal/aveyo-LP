@@ -2,7 +2,6 @@
 
 import MultiStepForm from '@/components/MultiStepForm'
 import Image from 'next/image'
-import Link from 'next/link'
 
 export default function Page1() {
   return (
@@ -18,7 +17,7 @@ export default function Page1() {
           priority
         />
         {/* Mobile Navbar - Over the photo */}
-        <div className="absolute top-0 left-0 right-0 z-30 p-6 flex items-center justify-between">
+        <div className="absolute top-0 left-0 right-0 z-30 p-6">
           <Image 
             src="/aveyo-logo.svg" 
             alt="AVEYO" 
@@ -27,10 +26,6 @@ export default function Page1() {
             priority
             className="brightness-0 invert"
           />
-          <Link href="/" className="text-white hover:text-gray-300 transition-colors flex items-center gap-2">
-            <span className="text-xl">←</span>
-            <span className="text-sm">Back</span>
-          </Link>
         </div>
         {/* Badge - Bottom Right on Mobile */}
         <div className="absolute bottom-4 right-4 z-20">
@@ -44,7 +39,7 @@ export default function Page1() {
       {/* Left Section */}
       <div className="bg-white p-8 md:p-16 lg:p-12 xl:p-16 flex flex-col min-h-screen w-full lg:w-1/2">
         {/* Desktop Navbar - Only shows on desktop */}
-        <div className="hidden lg:flex mb-8 lg:mb-12 items-center justify-between max-w-4xl mx-auto w-full">
+        <div className="hidden lg:flex mb-8 lg:mb-12 max-w-4xl mx-auto w-full">
           <Image 
             src="/aveyo-logo.svg" 
             alt="AVEYO" 
@@ -52,10 +47,6 @@ export default function Page1() {
             height={24}
             priority
           />
-          <Link href="/" className="text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-2">
-            <span className="text-xl">←</span>
-            <span className="text-sm">Back</span>
-          </Link>
         </div>
         
         <div className="flex-1 flex flex-col lg:justify-center mx-auto w-full max-w-md lg:max-w-xl xl:max-w-2xl">

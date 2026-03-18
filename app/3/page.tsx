@@ -2,7 +2,6 @@
 
 import { useState, FormEvent, useEffect } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 
 interface FormData {
   firstName: string
@@ -132,7 +131,7 @@ export default function Page3() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-50 bg-transparent">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
           <Image 
             src="/aveyo-logo.svg" 
             alt="AVEYO" 
@@ -141,10 +140,6 @@ export default function Page3() {
             priority
             className="brightness-0 invert md:w-[112px] md:h-[24px]"
           />
-          <Link href="/" className="text-white hover:text-gray-300 transition-colors flex items-center gap-2">
-            <span className="text-xl">←</span>
-            <span className="text-sm">Back</span>
-          </Link>
         </div>
       </header>
 
