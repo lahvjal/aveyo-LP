@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, FormEvent, useEffect } from 'react'
+import { trackLead } from '@/lib/meta-pixel'
 
 interface FormData {
   firstName: string
@@ -139,6 +140,7 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
 
         if (response.ok) {
           console.log('Form submitted successfully')
+          trackLead(formData.pageSlug, formData.offerName)
           setSubmitted(true)
         } else {
           console.error('Form submission failed:', response.status)

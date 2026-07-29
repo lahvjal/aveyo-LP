@@ -2,6 +2,7 @@
 
 import { useState, FormEvent, useEffect } from 'react'
 import Image from 'next/image'
+import { trackLead } from '@/lib/meta-pixel'
 
 interface FormData {
   firstName: string
@@ -100,6 +101,7 @@ export default function Page3() {
 
       if (response.ok) {
         console.log('Form submitted successfully')
+        trackLead(formData.pageSlug, formData.offerName)
         setSubmitted(true)
       } else {
         console.error('Form submission failed:', response.status)
