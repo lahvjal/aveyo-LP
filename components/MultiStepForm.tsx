@@ -73,8 +73,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
-  const validateStep = (): boolean => {
-    switch (currentStep) {
+  const isStepValid = (step: number): boolean => {
+    switch (step) {
       case 1:
         return /^\d{5}$/.test(formData.zipCode)
       case 2:
@@ -82,14 +82,26 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
       case 3:
         return formData.electricBill !== ''
       case 4:
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
       case 5:
-        return formData.firstName !== '' && formData.lastName !== ''
+        return formData.firstName.trim() !== '' && formData.lastName.trim() !== ''
       case 6:
         return formData.phone.length >= 10
       default:
         return true
     }
+  }
+
+  const validateStep = (): boolean => isStepValid(currentStep)
+
+  const validateAllSteps = (): boolean => {
+    for (let step = 1; step <= totalSteps; step++) {
+      if (!isStepValid(step)) {
+        setCurrentStep(step)
+        return false
+      }
+    }
+    return true
   }
 
   const nextStep = () => {
@@ -106,7 +118,15 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    if (validateStep()) {
+
+    // Enter key on intermediate steps triggers implicit form submission;
+    // advance to the next step instead of submitting early.
+    if (currentStep < totalSteps) {
+      nextStep()
+      return
+    }
+
+    if (validateAllSteps()) {
       try {
         const payload = {
           firstName: formData.firstName,
@@ -379,7 +399,7 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
             <input
               type="tel"
               value={formData.phone}
-              onChange={(e) => updateFormData('phone', e.target.value.replace(/\D/g, ''))}
+              onChange={(e) => updateFormData('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
               placeholder="(555) 555-5555"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />

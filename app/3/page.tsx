@@ -359,7 +359,7 @@ export default function Page3() {
                   <input
                     type="tel"
                     value={formData.phone}
-                    onChange={(e) => updateFormData('phone', e.target.value.replace(/\D/g, ''))}
+                    onChange={(e) => updateFormData('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
                     placeholder="(555) 555-5555"
                     className="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-lg"
                     required
