@@ -3,6 +3,7 @@
 import { useState, FormEvent, useEffect } from 'react'
 import Image from 'next/image'
 import { trackLead } from '@/lib/meta-pixel'
+import ConsentCheckbox from '@/components/ConsentCheckbox'
 
 interface FormData {
   firstName: string
@@ -43,6 +44,7 @@ export default function Page3() {
     fbclid: ''
   })
   const [submitted, setSubmitted] = useState(false)
+  const [consentToContact, setConsentToContact] = useState(false)
 
   // Extract URL parameters on mount
   useEffect(() => {
@@ -67,7 +69,11 @@ export default function Page3() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    
+
+    if (!consentToContact) {
+      return
+    }
+
     try {
       const payload = {
         firstName: formData.firstName,
@@ -86,6 +92,7 @@ export default function Page3() {
         utmAdset: formData.utmAdset,
         utmAd: formData.utmAd,
         fbclid: formData.fbclid,
+        consentToContact: consentToContact ? 'yes' : 'no',
         submittedAt: new Date().toISOString()
       }
       
@@ -368,10 +375,14 @@ export default function Page3() {
               </div>
             </div>
 
+            {/* Consent To Contact */}
+            <ConsentCheckbox checked={consentToContact} onChange={setConsentToContact} />
+
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-gray-900 text-white py-5 rounded-xl hover:bg-gray-800 transition-colors text-lg font-semibold shadow-lg"
+              disabled={!consentToContact}
+              className="w-full bg-gray-900 text-white py-5 rounded-xl hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg font-semibold shadow-lg"
             >
               Get My Free Quote →
             </button>

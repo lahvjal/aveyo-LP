@@ -2,6 +2,7 @@
 
 import { useState, FormEvent, useEffect } from 'react'
 import { trackLead } from '@/lib/meta-pixel'
+import ConsentCheckbox from '@/components/ConsentCheckbox'
 
 interface FormData {
   firstName: string
@@ -48,6 +49,7 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
     fbclid: ''
   })
   const [submitted, setSubmitted] = useState(false)
+  const [consentToContact, setConsentToContact] = useState(false)
 
   // Extract URL parameters on mount
   useEffect(() => {
@@ -86,7 +88,7 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
       case 5:
         return formData.firstName.trim() !== '' && formData.lastName.trim() !== ''
       case 6:
-        return formData.phone.length >= 10
+        return formData.phone.length >= 10 && consentToContact
       default:
         return true
     }
@@ -145,6 +147,7 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           utmAdset: formData.utmAdset,
           utmAd: formData.utmAd,
           fbclid: formData.fbclid,
+          consentToContact: consentToContact ? 'yes' : 'no',
           submittedAt: new Date().toISOString()
         }
         
@@ -403,6 +406,7 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
               placeholder="(555) 555-5555"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <ConsentCheckbox checked={consentToContact} onChange={setConsentToContact} />
             <div className="flex gap-3 pt-4">
               <button
                 type="button"

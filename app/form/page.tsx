@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { useState, FormEvent, useEffect } from 'react'
 import Image from 'next/image'
 import { trackLead } from '@/lib/meta-pixel'
+import ConsentCheckbox from '@/components/ConsentCheckbox'
 
 interface FormData {
   firstName: string
@@ -49,6 +50,7 @@ function FormContent() {
     fbclid: searchParams.get('fbclid') || ''
   })
   const [submitted, setSubmitted] = useState(false)
+  const [consentToContact, setConsentToContact] = useState(false)
 
   const totalSteps = 6
   const progress = (currentStep / totalSteps) * 100
@@ -70,7 +72,7 @@ function FormContent() {
       case 5:
         return formData.firstName.trim() !== '' && formData.lastName.trim() !== ''
       case 6:
-        return formData.phone.length >= 10
+        return formData.phone.length >= 10 && consentToContact
       default:
         return true
     }
@@ -129,6 +131,7 @@ function FormContent() {
           utmAdset: formData.utmAdset,
           utmAd: formData.utmAd,
           fbclid: formData.fbclid,
+          consentToContact: consentToContact ? 'yes' : 'no',
           submittedAt: new Date().toISOString()
         }
         
@@ -403,6 +406,7 @@ function FormContent() {
                   placeholder="(555) 555-5555"
                   className="w-full px-6 py-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-lg"
                 />
+                <ConsentCheckbox checked={consentToContact} onChange={setConsentToContact} />
                 <div className="flex gap-4 pt-4">
                   <button
                     type="button"
