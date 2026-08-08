@@ -1,6 +1,6 @@
 {
   "description": "Example payload sent to API endpoint on form submission",
-  "endpoint": "POST https://services.leadconnectorhq.com/hooks/mokTV2l2U2keZ6Co3vx1/webhook-trigger/53d2f869-ff50-4a7e-a22b-a1231c3372af",
+  "endpoint": "POST /api/leads",
   "headers": {
     "Content-Type": "application/json"
   },
@@ -10,6 +10,8 @@
     "email": "john.smith@example.com",
     "phone": "+13125551234",
     "zipCode": "60601",
+    "address": "",
+    "city": "",
     "homeOwnership": "yes",
     "electricBill": "$150 - $200",
     "pageSlug": "1",
@@ -19,6 +21,7 @@
     "utmAdset": "chicago-homeowners",
     "utmAd": "ad-123",
     "fbclid": "IwAR1234567890abcdefghijklmnop",
+    "consentToContact": "yes",
     "submittedAt": "2026-03-02T15:30:45.123Z"
   },
   "field_descriptions": {
@@ -27,6 +30,8 @@
     "email": "Valid email address",
     "phone": "Phone number with +1 prefix (e.g., +13125551234)",
     "zipCode": "5-digit ZIP code (string)",
+    "address": "Street address (empty string on landing pages 1 and 2)",
+    "city": "City (empty string on landing pages 1 and 2)",
     "homeOwnership": "Either 'yes' or 'no'",
     "electricBill": "One of: '$0 - $100', '$100 - $150', '$150 - $200', '$200 - $300', '$300+'",
     "pageSlug": "Page number: '1', '2', or '3'",
@@ -36,6 +41,7 @@
     "utmAdset": "UTM adset parameter from URL (empty string if not present)",
     "utmAd": "UTM ad parameter from URL (empty string if not present)",
     "fbclid": "Facebook Click ID from URL (empty string if not present)",
+    "consentToContact": "Always 'yes' for accepted submissions",
     "submittedAt": "ISO 8601 timestamp of submission"
   },
   "example_urls": {
@@ -48,6 +54,7 @@
     "If a tracking parameter is not present in the URL, it will be an empty string",
     "The phone field is formatted with +1 prefix (e.g., +13125551234)",
     "The pageSlug field identifies which page the user submitted from",
-    "Page 2 passes tracking data through to the /form page via URL parameters"
+    "Page 2 passes tracking data through to the /form page via URL parameters",
+    "The API returns an eventId used by the Meta Pixel and connected Conversions API Gateway for Lead-event deduplication"
   ]
 }

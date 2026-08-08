@@ -3,6 +3,7 @@
 import { useState, FormEvent, useEffect } from 'react'
 import Image from 'next/image'
 import { trackLead } from '@/lib/meta-pixel'
+import { submitLead } from '@/lib/lead-submission'
 import ConsentCheckbox from '@/components/ConsentCheckbox'
 
 interface FormData {
@@ -45,6 +46,8 @@ export default function Page3() {
   })
   const [submitted, setSubmitted] = useState(false)
   const [consentToContact, setConsentToContact] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   // Extract URL parameters on mount
   useEffect(() => {
@@ -70,9 +73,12 @@ export default function Page3() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
-    if (!consentToContact) {
+    if (!consentToContact || isSubmitting) {
       return
     }
+
+    setIsSubmitting(true)
+    setSubmitError('')
 
     try {
       const payload = {
@@ -92,33 +98,19 @@ export default function Page3() {
         utmAdset: formData.utmAdset,
         utmAd: formData.utmAd,
         fbclid: formData.fbclid,
-        consentToContact: consentToContact ? 'yes' : 'no',
+        consentToContact: 'yes' as const,
         submittedAt: new Date().toISOString()
       }
-      
-      console.log('Submitting form:', payload)
-      
-      const response = await fetch('https://services.leadconnectorhq.com/hooks/mokTV2l2U2keZ6Co3vx1/webhook-trigger/53d2f869-ff50-4a7e-a22b-a1231c3372af', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      })
 
-      if (response.ok) {
-        console.log('Form submitted successfully')
-        trackLead(formData.pageSlug, formData.offerName)
-        setSubmitted(true)
-      } else {
-        console.error('Form submission failed:', response.status)
-        // Still show success to user even if webhook fails
-        setSubmitted(true)
-      }
-    } catch (error) {
-      console.error('Error submitting form:', error)
-      // Still show success to user even if webhook fails
+      const result = await submitLead(payload)
+      trackLead(formData.pageSlug, formData.offerName, result.eventId)
       setSubmitted(true)
+    } catch (error) {
+      setSubmitError(error instanceof Error
+        ? error.message
+        : 'We could not submit your information. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -378,13 +370,19 @@ export default function Page3() {
             {/* Consent To Contact */}
             <ConsentCheckbox checked={consentToContact} onChange={setConsentToContact} />
 
+            {submitError && (
+              <p role="alert" className="text-sm text-red-600">
+                {submitError}
+              </p>
+            )}
+
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={!consentToContact}
+              disabled={!consentToContact || isSubmitting}
               className="w-full bg-gray-900 text-white py-5 rounded-xl hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg font-semibold shadow-lg"
             >
-              Get My Free Quote →
+              {isSubmitting ? 'Submitting…' : 'Get My Free Quote →'}
             </button>
 
             {/* Trust Indicators */}

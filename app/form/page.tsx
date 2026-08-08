@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { useState, FormEvent, useEffect } from 'react'
 import Image from 'next/image'
 import { trackLead } from '@/lib/meta-pixel'
+import { submitLead } from '@/lib/lead-submission'
 import ConsentCheckbox from '@/components/ConsentCheckbox'
 
 interface FormData {
@@ -51,6 +52,8 @@ function FormContent() {
   })
   const [submitted, setSubmitted] = useState(false)
   const [consentToContact, setConsentToContact] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   const totalSteps = 6
   const progress = (currentStep / totalSteps) * 100
@@ -105,6 +108,10 @@ function FormContent() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
+    if (isSubmitting) {
+      return
+    }
+
     // Enter key on intermediate steps triggers implicit form submission;
     // advance to the next step instead of submitting early.
     if (currentStep < totalSteps) {
@@ -113,6 +120,9 @@ function FormContent() {
     }
 
     if (validateAllSteps()) {
+      setIsSubmitting(true)
+      setSubmitError('')
+
       try {
         const payload = {
           firstName: formData.firstName,
@@ -131,33 +141,19 @@ function FormContent() {
           utmAdset: formData.utmAdset,
           utmAd: formData.utmAd,
           fbclid: formData.fbclid,
-          consentToContact: consentToContact ? 'yes' : 'no',
+          consentToContact: 'yes' as const,
           submittedAt: new Date().toISOString()
         }
-        
-        console.log('Submitting form:', payload)
-        
-        const response = await fetch('https://services.leadconnectorhq.com/hooks/mokTV2l2U2keZ6Co3vx1/webhook-trigger/53d2f869-ff50-4a7e-a22b-a1231c3372af', {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload)
-        })
 
-        if (response.ok) {
-          console.log('Form submitted successfully')
-          trackLead(formData.pageSlug, formData.offerName)
-          setSubmitted(true)
-        } else {
-          console.error('Form submission failed:', response.status)
-          // Still show success to user even if webhook fails
-          setSubmitted(true)
-        }
-      } catch (error) {
-        console.error('Error submitting form:', error)
-        // Still show success to user even if webhook fails
+        const result = await submitLead(payload)
+        trackLead(formData.pageSlug, formData.offerName, result.eventId)
         setSubmitted(true)
+      } catch (error) {
+        setSubmitError(error instanceof Error
+          ? error.message
+          : 'We could not submit your information. Please try again.')
+      } finally {
+        setIsSubmitting(false)
       }
     }
   }
@@ -407,6 +403,11 @@ function FormContent() {
                   className="w-full px-6 py-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-lg"
                 />
                 <ConsentCheckbox checked={consentToContact} onChange={setConsentToContact} />
+                {submitError && (
+                  <p role="alert" className="text-sm text-red-600">
+                    {submitError}
+                  </p>
+                )}
                 <div className="flex gap-4 pt-4">
                   <button
                     type="button"
@@ -417,10 +418,10 @@ function FormContent() {
                   </button>
                   <button
                     type="submit"
-                    disabled={!validateStep()}
+                    disabled={!validateStep() || isSubmitting}
                     className="flex-1 bg-black text-white py-4 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg font-semibold"
                   >
-                    Get My Quote
+                    {isSubmitting ? 'Submitting…' : 'Get My Quote'}
                   </button>
                 </div>
               </div>

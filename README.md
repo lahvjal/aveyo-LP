@@ -43,12 +43,21 @@ cd aveyo-LP
 npm install
 ```
 
-3. Run the development server:
+3. Create `.env.local` from `.env.example` and configure:
+
+```bash
+cp .env.example .env.local
+```
+
+- `GHL_WEBHOOK_URL`: the GoHighLevel inbound webhook URL
+- `META_PIXEL_ID`: the Meta Pixel ID
+
+4. Run the development server:
 ```bash
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Available Scripts
 
@@ -78,21 +87,15 @@ The project is optimized for deployment on Vercel:
 
 ## Form Integration
 
-To connect the form to your backend API, update the `handleSubmit` function in `components/MultiStepForm.tsx`:
+All forms submit to the same-origin `POST /api/leads` route. The server validates the payload and forwards it to GoHighLevel. After GoHighLevel accepts the submission, the browser sends a Meta Pixel `Lead` event with a unique event ID. The Conversions API Gateway connected to the Pixel forwards the corresponding server event and uses that event ID for deduplication.
 
-```typescript
-const handleSubmit = async (e: FormEvent) => {
-  e.preventDefault()
-  if (validateStep()) {
-    await fetch('/api/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    })
-    setSubmitted(true)
-  }
-}
-```
+The GoHighLevel webhook URL is server-only and is not included in the browser bundle. Meta authentication is managed by the connected Conversions API Gateway; this application does not store or send a Meta access token.
+
+### Required Meta Events Manager setting
+
+Turn off **Track events automatically without code** for this Pixel in Meta Events Manager. The application already sends an explicit `Lead` only after GoHighLevel accepts the submission. Leaving automatic event detection enabled can create an additional browser `Lead` with a different event ID and double-count one form submission.
+
+Do not disable Pixel `autoConfig` in the website code. The Conversions API Gateway uses Meta-delivered Pixel configuration to forward server events.
 
 ## Customization
 

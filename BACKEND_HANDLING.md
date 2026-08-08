@@ -8,7 +8,7 @@ All three landing pages now send **the same payload structure**. Landing Pages 1
 
 ## Consistent Payload Structure (All Pages)
 
-All landing pages now send the same 15 fields + timestamp:
+All landing pages now send the same 17 fields + timestamp (18 keys total):
 
 ```json
 {
@@ -28,6 +28,7 @@ All landing pages now send the same 15 fields + timestamp:
   "utmAdset": "chicago-homeowners",
   "utmAd": "ad-123",
   "fbclid": "",
+  "consentToContact": "yes",
   "submittedAt": "2026-03-02T15:30:45.123Z"
 }
 ```
@@ -84,6 +85,7 @@ app.post('/webhook', (req, res) => {
     utmAdset,
     utmAd,
     fbclid,
+    consentToContact,
     submittedAt
   } = req.body;
 
@@ -130,6 +132,7 @@ CREATE TABLE leads (
   utm_adset VARCHAR(255) NOT NULL DEFAULT '',
   utm_ad VARCHAR(255) NOT NULL DEFAULT '',
   fbclid VARCHAR(255) NOT NULL DEFAULT '',
+  consent_to_contact VARCHAR(3) NOT NULL,
   submitted_at TIMESTAMP NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -185,6 +188,7 @@ const buildCRMPayload = (formData) => {
     electric_bill: formData.electricBill,
     page_source: formData.pageSlug,
     offer: formData.offerName,
+    consent_to_contact: formData.consentToContact,
   };
 
   // Only add address fields if they're not empty
@@ -233,5 +237,5 @@ const buildCRMPayload = (formData) => {
 
 ✅ Landing Page 3 collects and sends: `address` and `city` with values
 ✅ Landing Page 1 and 2 send: `address: ""` and `city: ""`
-✅ All forms send identical payload structure (17 fields total)
+✅ All forms send identical payload structure (18 keys total)
 ✅ Backend receives consistent structure on every submission

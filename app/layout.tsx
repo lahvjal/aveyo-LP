@@ -4,6 +4,7 @@ import Script from 'next/script'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
+const metaPixelId = process.env.META_PIXEL_ID?.trim() || '831171509159406'
 
 export const metadata: Metadata = {
   title: 'Aveyo - Solar + Storage Solutions',
@@ -29,19 +30,10 @@ export default function RootLayout({
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '831171509159406');
+            fbq('init', '${metaPixelId}');
             fbq('track', 'PageView');
           `}
         </Script>
-        <noscript>
-          <img
-            height="1"
-            width="1"
-            style={{ display: 'none' }}
-            src="https://www.facebook.com/tr?id=831171509159406&ev=PageView&noscript=1"
-            alt=""
-          />
-        </noscript>
         {children}
       </body>
     </html>
