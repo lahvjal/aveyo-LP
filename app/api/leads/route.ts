@@ -5,6 +5,12 @@ import type { LeadPayload } from '@/lib/lead-submission'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
+// Keep the production form operational even when a deployment is missing the
+// optional override. This is the same Aveyo webhook used by the landing pages
+// before submissions were moved behind this server route.
+const DEFAULT_GHL_WEBHOOK_URL =
+  'https://services.leadconnectorhq.com/hooks/mokTV2l2U2keZ6Co3vx1/webhook-trigger/53d2f869-ff50-4a7e-a22b-a1231c3372af'
+
 const ELECTRIC_BILL_RANGES = new Set([
   '$0 - $100',
   '$100 - $150',
@@ -75,11 +81,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Please review the required form fields and try again.' }, { status: 400 })
   }
 
-  const ghlWebhookUrl = process.env.GHL_WEBHOOK_URL?.trim()
-  if (!ghlWebhookUrl) {
-    console.error('GHL_WEBHOOK_URL is not configured')
-    return NextResponse.json({ error: 'Lead submission is temporarily unavailable.' }, { status: 500 })
-  }
+  const ghlWebhookUrl = process.env.GHL_WEBHOOK_URL?.trim() || DEFAULT_GHL_WEBHOOK_URL
 
   const payload: LeadPayload = {
     ...requestBody,

@@ -49,7 +49,8 @@ npm install
 cp .env.example .env.local
 ```
 
-- `GHL_WEBHOOK_URL`: the GoHighLevel inbound webhook URL
+- `GHL_WEBHOOK_URL`: optional GoHighLevel inbound webhook URL override; the app
+  falls back to the established Aveyo landing-page webhook when it is omitted
 - `META_PIXEL_ID`: the Meta Pixel ID
 
 4. Run the development server:
