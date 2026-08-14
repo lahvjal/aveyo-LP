@@ -49,8 +49,7 @@ npm install
 cp .env.example .env.local
 ```
 
-- `GHL_WEBHOOK_URL`: optional GoHighLevel inbound webhook URL override; the app
-  falls back to the established Aveyo landing-page webhook when it is omitted
+- `GHL_WEBHOOK_URL`: required server-only GoHighLevel inbound webhook URL
 - `META_PIXEL_ID`: the Meta Pixel ID
 - `META_ACCESS_TOKEN`: server-only Meta Conversions API access token
 - `META_DATASET_ID`: optional dataset override; defaults to `831171509159406`
@@ -93,7 +92,7 @@ The project is optimized for deployment on Vercel:
 
 All forms submit to the same-origin `POST /api/leads` route. The server validates the payload and forwards it to GoHighLevel. After GoHighLevel accepts the submission, the server sends a Meta Conversions API `Lead` event and returns the same unique event ID to the browser Pixel for deduplication.
 
-The GoHighLevel webhook URL and Meta access token are server-only and are not included in the browser bundle. Store `META_ACCESS_TOKEN` in the deployment environment, never in source control.
+The GoHighLevel webhook URL and Meta access token are server-only and are not included in the browser bundle. Store `GHL_WEBHOOK_URL` and `META_ACCESS_TOKEN` in the deployment environment, never in source control. If `GHL_WEBHOOK_URL` is missing, the lead route returns a configuration error instead of forwarding to a fallback location.
 
 ### Required Meta Events Manager setting
 
