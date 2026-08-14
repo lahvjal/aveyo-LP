@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import type { LeadPayload } from '@/lib/lead-submission'
+import { sendMetaLead } from '@/lib/meta-conversions-api'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -68,6 +69,30 @@ function isLeadPayload(value: unknown): value is LeadPayload {
   )
 }
 
+function getClientIpAddress(request: NextRequest) {
+  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    || request.headers.get('x-real-ip')?.trim()
+    || undefined
+}
+
+function getEventSourceUrl(request: NextRequest, pageSlug: string) {
+  const referer = request.headers.get('referer')
+
+  if (referer) {
+    try {
+      const url = new URL(referer)
+
+      if (url.protocol === 'https:' || url.protocol === 'http:') {
+        return url.toString()
+      }
+    } catch {
+      // Fall back to the known public landing-page domain below.
+    }
+  }
+
+  return `https://illinois.aveyo.com/${encodeURIComponent(pageSlug)}`
+}
+
 export async function POST(request: NextRequest) {
   let requestBody: unknown
 
@@ -117,6 +142,35 @@ export async function POST(request: NextRequest) {
   }
 
   const eventId = randomUUID()
+  const fbp = request.cookies.get('_fbp')?.value
+  const fbc = request.cookies.get('_fbc')?.value
+    || (payload.fbclid ? `fb.1.${Date.now()}.${payload.fbclid}` : undefined)
+
+  try {
+    const metaResult = await sendMetaLead(payload, {
+      eventId,
+      sourceUrl: getEventSourceUrl(request, payload.pageSlug),
+      clientIpAddress: getClientIpAddress(request),
+      clientUserAgent: request.headers.get('user-agent') || undefined,
+      fbp,
+      fbc,
+    })
+
+    if (metaResult) {
+      console.info('Meta CAPI Lead event accepted', {
+        eventId,
+        eventsReceived: metaResult.events_received,
+        traceId: metaResult.fbtrace_id,
+      })
+    }
+  } catch (error) {
+    // Do not lose a lead that GHL already accepted. The browser Pixel still
+    // receives this same event ID, while the server failure is visible in logs.
+    console.error('Meta CAPI Lead event failed', {
+      eventId,
+      message: error instanceof Error ? error.message : 'Unknown Meta CAPI error',
+    })
+  }
 
   return NextResponse.json({ success: true, eventId })
 }

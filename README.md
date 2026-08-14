@@ -52,6 +52,9 @@ cp .env.example .env.local
 - `GHL_WEBHOOK_URL`: optional GoHighLevel inbound webhook URL override; the app
   falls back to the established Aveyo landing-page webhook when it is omitted
 - `META_PIXEL_ID`: the Meta Pixel ID
+- `META_ACCESS_TOKEN`: server-only Meta Conversions API access token
+- `META_DATASET_ID`: optional dataset override; defaults to `831171509159406`
+- `META_GRAPH_API_VERSION`: optional Graph API version override; defaults to `v22.0`
 
 4. Run the development server:
 ```bash
@@ -88,15 +91,15 @@ The project is optimized for deployment on Vercel:
 
 ## Form Integration
 
-All forms submit to the same-origin `POST /api/leads` route. The server validates the payload and forwards it to GoHighLevel. After GoHighLevel accepts the submission, the browser sends a Meta Pixel `Lead` event with a unique event ID. The Conversions API Gateway connected to the Pixel forwards the corresponding server event and uses that event ID for deduplication.
+All forms submit to the same-origin `POST /api/leads` route. The server validates the payload and forwards it to GoHighLevel. After GoHighLevel accepts the submission, the server sends a Meta Conversions API `Lead` event and returns the same unique event ID to the browser Pixel for deduplication.
 
-The GoHighLevel webhook URL is server-only and is not included in the browser bundle. Meta authentication is managed by the connected Conversions API Gateway; this application does not store or send a Meta access token.
+The GoHighLevel webhook URL and Meta access token are server-only and are not included in the browser bundle. Store `META_ACCESS_TOKEN` in the deployment environment, never in source control.
 
 ### Required Meta Events Manager setting
 
 Turn off **Track events automatically without code** for this Pixel in Meta Events Manager. The application already sends an explicit `Lead` only after GoHighLevel accepts the submission. Leaving automatic event detection enabled can create an additional browser `Lead` with a different event ID and double-count one form submission.
 
-Do not disable Pixel `autoConfig` in the website code. The Conversions API Gateway uses Meta-delivered Pixel configuration to forward server events.
+Do not disable Pixel `autoConfig` in the website code. Meta uses the browser and server events' shared event ID to deduplicate each accepted lead.
 
 ## Customization
 
