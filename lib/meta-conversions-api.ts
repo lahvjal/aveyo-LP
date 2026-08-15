@@ -64,7 +64,6 @@ export async function sendMetaLead(
     ph: hashIfPresent(lead.phone, (value) => value.replace(/\D/g, '')),
     fn: hashIfPresent(lead.firstName),
     ln: hashIfPresent(lead.lastName),
-    ct: hashIfPresent(lead.city),
     zp: hashIfPresent(lead.zipCode, (value) => value.trim().toLowerCase()),
     country: [sha256('us')],
     client_ip_address: context.clientIpAddress,

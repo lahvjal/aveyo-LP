@@ -1,67 +1,10 @@
 import { randomUUID } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
-import type { LeadPayload } from '@/lib/lead-submission'
+import { buildGoHighLevelLeadPayload, isLeadPayload } from '@/lib/lead-payload.mjs'
 import { sendMetaLead } from '@/lib/meta-conversions-api'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
-
-const ELECTRIC_BILL_RANGES = new Set([
-  '$0 - $100',
-  '$100 - $150',
-  '$150 - $200',
-  '$200 - $300',
-  '$300+',
-])
-
-function isString(value: unknown): value is string {
-  return typeof value === 'string'
-}
-
-function isLeadPayload(value: unknown): value is LeadPayload {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    return false
-  }
-
-  const payload = value as Record<string, unknown>
-  const stringFields = [
-    'firstName',
-    'lastName',
-    'email',
-    'phone',
-    'zipCode',
-    'address',
-    'city',
-    'homeOwnership',
-    'electricBill',
-    'pageSlug',
-    'offerName',
-    'utmSource',
-    'utmCampaign',
-    'utmAdset',
-    'utmAd',
-    'fbclid',
-    'consentToContact',
-    'submittedAt',
-  ]
-
-  if (!stringFields.every((field) => isString(payload[field]))) {
-    return false
-  }
-
-  const lead = payload as unknown as LeadPayload
-
-  return (
-    lead.firstName.trim().length > 0 &&
-    lead.lastName.trim().length > 0 &&
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lead.email.trim()) &&
-    /^\+1\d{10}$/.test(lead.phone) &&
-    /^\d{5}$/.test(lead.zipCode) &&
-    (lead.homeOwnership === 'yes' || lead.homeOwnership === 'no') &&
-    ELECTRIC_BILL_RANGES.has(lead.electricBill) &&
-    lead.consentToContact === 'yes'
-  )
-}
 
 function getClientIpAddress(request: NextRequest) {
   return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
@@ -110,10 +53,7 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  const payload: LeadPayload = {
-    ...requestBody,
-    submittedAt: new Date().toISOString(),
-  }
+  const payload = buildGoHighLevelLeadPayload(requestBody)
 
   let ghlResponse: Response
 

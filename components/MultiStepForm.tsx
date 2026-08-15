@@ -12,7 +12,6 @@ interface FormData {
   phone: string
   zipCode: string
   address: string
-  city: string
   homeOwnership: string
   electricBill: string
   pageSlug: string
@@ -38,7 +37,6 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
     phone: '',
     zipCode: '',
     address: '',
-    city: '',
     homeOwnership: '',
     electricBill: '',
     pageSlug: pageSlug,
@@ -71,7 +69,7 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
     }
   }, [pageSlug, offerName])
 
-  const totalSteps = 6
+  const totalSteps = 7
   const progress = (currentStep / totalSteps) * 100
 
   const updateFormData = (field: keyof FormData, value: string) => {
@@ -83,14 +81,16 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
       case 1:
         return /^\d{5}$/.test(formData.zipCode)
       case 2:
-        return formData.homeOwnership !== ''
+        return formData.address.trim() !== ''
       case 3:
-        return formData.electricBill !== ''
+        return formData.homeOwnership !== ''
       case 4:
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
+        return formData.electricBill !== ''
       case 5:
-        return formData.firstName.trim() !== '' && formData.lastName.trim() !== ''
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
       case 6:
+        return formData.firstName.trim() !== '' && formData.lastName.trim() !== ''
+      case 7:
         return formData.phone.length >= 10 && consentToContact
       default:
         return true
@@ -147,7 +147,6 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           phone: formData.phone ? `+1${formData.phone}` : '',
           zipCode: formData.zipCode,
           address: formData.address,
-          city: formData.city,
           homeOwnership: formData.homeOwnership,
           electricBill: formData.electricBill,
           pageSlug: formData.pageSlug,
@@ -223,8 +222,42 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           </div>
         )}
 
-        {/* Step 2: Home Ownership */}
+        {/* Step 2: Street Address */}
         {currentStep === 2 && (
+          <div className="space-y-4">
+            <label className="block text-gray-900 font-medium mb-2">
+              What&apos;s your street address?
+            </label>
+            <input
+              type="text"
+              value={formData.address}
+              onChange={(e) => updateFormData('address', e.target.value)}
+              placeholder="123 Main Street"
+              autoComplete="street-address"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <div className="flex gap-3 pt-4">
+              <button
+                type="button"
+                onClick={prevStep}
+                className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={nextStep}
+                disabled={!validateStep()}
+                className="flex-1 bg-gray-700 text-white py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Home Ownership */}
+        {currentStep === 3 && (
           <div className="space-y-4">
             <label className="block text-gray-900 font-medium mb-4">
               Do you own your home?
@@ -273,8 +306,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           </div>
         )}
 
-        {/* Step 3: Electric Bill */}
-        {currentStep === 3 && (
+        {/* Step 4: Electric Bill */}
+        {currentStep === 4 && (
           <div className="space-y-4">
             <label className="block text-gray-900 font-medium mb-4">
               What&apos;s your average monthly electric bill?
@@ -314,8 +347,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           </div>
         )}
 
-        {/* Step 4: Email */}
-        {currentStep === 4 && (
+        {/* Step 5: Email */}
+        {currentStep === 5 && (
           <div className="space-y-4">
             <label className="block text-gray-900 font-medium mb-2">
               What&apos;s your email address?
@@ -347,8 +380,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           </div>
         )}
 
-        {/* Step 5: Name */}
-        {currentStep === 5 && (
+        {/* Step 6: Name */}
+        {currentStep === 6 && (
           <div className="space-y-4">
             <label className="block text-gray-900 font-medium mb-2">
               What&apos;s your name?
@@ -389,8 +422,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           </div>
         )}
 
-        {/* Step 6: Phone */}
-        {currentStep === 6 && (
+        {/* Step 7: Phone */}
+        {currentStep === 7 && (
           <div className="space-y-4">
             <label className="block text-gray-900 font-medium mb-2">
               What&apos;s your phone number?

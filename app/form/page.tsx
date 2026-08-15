@@ -15,7 +15,6 @@ interface FormData {
   phone: string
   zipCode: string
   address: string
-  city: string
   homeOwnership: string
   electricBill: string
   pageSlug: string
@@ -39,7 +38,6 @@ function FormContent() {
     phone: '',
     zipCode: initialZip,
     address: '',
-    city: '',
     homeOwnership: '',
     electricBill: '',
     pageSlug: searchParams.get('pageSlug') || '',
@@ -55,7 +53,7 @@ function FormContent() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const totalSteps = 6
+  const totalSteps = 7
   const progress = (currentStep / totalSteps) * 100
 
   const updateFormData = (field: keyof FormData, value: string) => {
@@ -67,14 +65,16 @@ function FormContent() {
       case 1:
         return /^\d{5}$/.test(formData.zipCode)
       case 2:
-        return formData.homeOwnership !== ''
+        return formData.address.trim() !== ''
       case 3:
-        return formData.electricBill !== ''
+        return formData.homeOwnership !== ''
       case 4:
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
+        return formData.electricBill !== ''
       case 5:
-        return formData.firstName.trim() !== '' && formData.lastName.trim() !== ''
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
       case 6:
+        return formData.firstName.trim() !== '' && formData.lastName.trim() !== ''
+      case 7:
         return formData.phone.length >= 10 && consentToContact
       default:
         return true
@@ -131,7 +131,6 @@ function FormContent() {
           phone: formData.phone ? `+1${formData.phone}` : '',
           zipCode: formData.zipCode,
           address: formData.address,
-          city: formData.city,
           homeOwnership: formData.homeOwnership,
           electricBill: formData.electricBill,
           pageSlug: formData.pageSlug,
@@ -223,8 +222,42 @@ function FormContent() {
               </div>
             )}
 
-            {/* Step 2: Home Ownership */}
+            {/* Step 2: Street Address */}
             {currentStep === 2 && (
+              <div className="space-y-6">
+                <label className="block text-gray-900 font-semibold text-2xl mb-4">
+                  What&apos;s your street address?
+                </label>
+                <input
+                  type="text"
+                  value={formData.address}
+                  onChange={(e) => updateFormData('address', e.target.value)}
+                  placeholder="123 Main Street"
+                  autoComplete="street-address"
+                  className="w-full px-6 py-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-lg"
+                />
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={prevStep}
+                    className="flex-1 bg-gray-200 text-gray-700 py-4 rounded-lg hover:bg-gray-300 transition-colors text-lg font-semibold"
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    disabled={!validateStep()}
+                    className="flex-1 bg-black text-white py-4 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg font-semibold"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Home Ownership */}
+            {currentStep === 3 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   Do you own your home?
@@ -273,8 +306,8 @@ function FormContent() {
               </div>
             )}
 
-            {/* Step 3: Electric Bill */}
-            {currentStep === 3 && (
+            {/* Step 4: Electric Bill */}
+            {currentStep === 4 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   What&apos;s your average monthly electric bill?
@@ -314,8 +347,8 @@ function FormContent() {
               </div>
             )}
 
-            {/* Step 4: Email */}
-            {currentStep === 4 && (
+            {/* Step 5: Email */}
+            {currentStep === 5 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   What&apos;s your email address?
@@ -347,8 +380,8 @@ function FormContent() {
               </div>
             )}
 
-            {/* Step 5: Name */}
-            {currentStep === 5 && (
+            {/* Step 6: Name */}
+            {currentStep === 6 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   What&apos;s your name?
@@ -389,8 +422,8 @@ function FormContent() {
               </div>
             )}
 
-            {/* Step 6: Phone */}
-            {currentStep === 6 && (
+            {/* Step 7: Phone */}
+            {currentStep === 7 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   What&apos;s your phone number?

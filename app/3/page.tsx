@@ -13,7 +13,6 @@ interface FormData {
   phone: string
   zipCode: string
   address: string
-  city: string
   homeOwnership: string
   electricBill: string
   pageSlug: string
@@ -33,7 +32,6 @@ export default function Page3() {
     phone: '',
     zipCode: '',
     address: '',
-    city: '',
     homeOwnership: '',
     electricBill: '',
     pageSlug: '3',
@@ -88,7 +86,6 @@ export default function Page3() {
         phone: formData.phone ? `+1${formData.phone}` : '',
         zipCode: formData.zipCode,
         address: formData.address,
-        city: formData.city,
         homeOwnership: formData.homeOwnership,
         electricBill: formData.electricBill,
         pageSlug: formData.pageSlug,
@@ -195,21 +192,6 @@ export default function Page3() {
                 value={formData.address}
                 onChange={(e) => updateFormData('address', e.target.value)}
                 placeholder="123 Main Street"
-                className="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-lg"
-                required
-              />
-            </div>
-
-            {/* City */}
-            <div>
-              <label className="block text-gray-900 font-semibold text-lg mb-3">
-                What city do you live in?
-              </label>
-              <input
-                type="text"
-                value={formData.city}
-                onChange={(e) => updateFormData('city', e.target.value)}
-                placeholder="Chicago"
                 className="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-lg"
                 required
               />
