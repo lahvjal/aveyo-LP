@@ -2,9 +2,9 @@
 
 import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { useState, FormEvent, useEffect } from 'react'
+import { useState, FormEvent, useEffect, useRef } from 'react'
 import Image from 'next/image'
-import { trackLead } from '@/lib/meta-pixel'
+import { trackLead, trackStepCompleted } from '@/lib/meta-pixel'
 import { submitLead } from '@/lib/lead-submission'
 import ConsentCheckbox from '@/components/ConsentCheckbox'
 
@@ -93,8 +93,21 @@ function FormContent() {
     return true
   }
 
+  // Fire each step's custom pixel event only once per session, so navigating
+  // back and re-advancing doesn't inflate funnel counts in Events Manager.
+  // A zip passed in from the landing page means step 1 already fired there.
+  const trackedStepsRef = useRef<Set<number>>(new Set(initialZip ? [1] : []))
+
+  const markStepCompleted = (step: number) => {
+    if (!trackedStepsRef.current.has(step)) {
+      trackedStepsRef.current.add(step)
+      trackStepCompleted(step, formData.pageSlug, formData.offerName)
+    }
+  }
+
   const nextStep = () => {
     if (validateStep() && currentStep < totalSteps) {
+      markStepCompleted(currentStep)
       setCurrentStep(currentStep + 1)
     }
   }
@@ -145,6 +158,7 @@ function FormContent() {
         }
 
         const result = await submitLead(payload)
+        markStepCompleted(totalSteps)
         trackLead(formData.pageSlug, formData.offerName, result.eventId)
         setSubmitted(true)
       } catch (error) {
