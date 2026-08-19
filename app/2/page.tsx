@@ -20,8 +20,9 @@ export default function Page2() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     if (zipCode.length === 5) {
-      // Step 1 (zip) completes on this page; /form starts at step 2.
-      trackStepCompleted(1, '2', 'Go Solar With $0 Down')
+      // The zip step (3 in the form's order) completes on this page;
+      // /form pre-fills it and starts at the qualifying questions.
+      trackStepCompleted(3, '2', 'Go Solar With $0 Down')
       // Pass through all URL parameters plus the page info
       const params = new URLSearchParams(urlParams)
       params.set('zip', zipCode)

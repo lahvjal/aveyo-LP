@@ -30,7 +30,7 @@ function FormContent() {
   const searchParams = useSearchParams()
   const initialZip = searchParams.get('zip') || ''
   
-  const [currentStep, setCurrentStep] = useState(initialZip ? 2 : 1)
+  const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
@@ -60,22 +60,24 @@ function FormContent() {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
+  // Step order puts the easy qualifying questions first and the
+  // highest-friction ask (street address) last, when commitment is highest.
   const isStepValid = (step: number): boolean => {
     switch (step) {
       case 1:
-        return /^\d{5}$/.test(formData.zipCode)
-      case 2:
-        return formData.address.trim() !== ''
-      case 3:
         return formData.homeOwnership !== ''
-      case 4:
+      case 2:
         return formData.electricBill !== ''
-      case 5:
+      case 3:
+        return /^\d{5}$/.test(formData.zipCode)
+      case 4:
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
-      case 6:
+      case 5:
         return formData.firstName.trim() !== '' && formData.lastName.trim() !== ''
+      case 6:
+        return formData.phone.length >= 10
       case 7:
-        return formData.phone.length >= 10 && consentToContact
+        return formData.address.trim() !== '' && consentToContact
       default:
         return true
     }
@@ -95,8 +97,9 @@ function FormContent() {
 
   // Fire each step's custom pixel event only once per session, so navigating
   // back and re-advancing doesn't inflate funnel counts in Events Manager.
-  // A zip passed in from the landing page means step 1 already fired there.
-  const trackedStepsRef = useRef<Set<number>>(new Set(initialZip ? [1] : []))
+  // A zip passed in from the landing page means the zip step (3) already
+  // fired there; it stays pre-filled here.
+  const trackedStepsRef = useRef<Set<number>>(new Set(initialZip ? [3] : []))
 
   const markStepCompleted = (step: number) => {
     if (!trackedStepsRef.current.has(step)) {
@@ -211,67 +214,8 @@ function FormContent() {
           </div>
 
           <form onSubmit={handleSubmit}>
-            {/* Step 1: ZIP Code */}
+            {/* Step 1: Home Ownership */}
             {currentStep === 1 && (
-              <div className="space-y-6">
-                <label className="block text-gray-900 font-semibold text-2xl mb-4">
-                  What&apos;s your ZIP code?
-                </label>
-                <input
-                  type="text"
-                  value={formData.zipCode}
-                  onChange={(e) => updateFormData('zipCode', e.target.value.replace(/\D/g, '').slice(0, 5))}
-                  placeholder="Enter your ZIP code"
-                  className="w-full px-6 py-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-lg"
-                  maxLength={5}
-                />
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  disabled={!validateStep()}
-                  className="w-full bg-black text-white py-4 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg font-semibold"
-                >
-                  Next
-                </button>
-              </div>
-            )}
-
-            {/* Step 2: Street Address */}
-            {currentStep === 2 && (
-              <div className="space-y-6">
-                <label className="block text-gray-900 font-semibold text-2xl mb-4">
-                  What&apos;s your street address?
-                </label>
-                <input
-                  type="text"
-                  value={formData.address}
-                  onChange={(e) => updateFormData('address', e.target.value)}
-                  placeholder="123 Main Street"
-                  autoComplete="street-address"
-                  className="w-full px-6 py-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-lg"
-                />
-                <div className="flex gap-4 pt-4">
-                  <button
-                    type="button"
-                    onClick={prevStep}
-                    className="flex-1 bg-gray-200 text-gray-700 py-4 rounded-lg hover:bg-gray-300 transition-colors text-lg font-semibold"
-                  >
-                    Back
-                  </button>
-                  <button
-                    type="button"
-                    onClick={nextStep}
-                    disabled={!validateStep()}
-                    className="flex-1 bg-black text-white py-4 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg font-semibold"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Step 3: Home Ownership */}
-            {currentStep === 3 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   Do you own your home?
@@ -300,28 +244,19 @@ function FormContent() {
                     <span className="text-gray-900 text-lg">No</span>
                   </label>
                 </div>
-                <div className="flex gap-4 pt-4">
-                  <button
-                    type="button"
-                    onClick={prevStep}
-                    className="flex-1 bg-gray-200 text-gray-700 py-4 rounded-lg hover:bg-gray-300 transition-colors text-lg font-semibold"
-                  >
-                    Back
-                  </button>
-                  <button
-                    type="button"
-                    onClick={nextStep}
-                    disabled={!validateStep()}
-                    className="flex-1 bg-black text-white py-4 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg font-semibold"
-                  >
-                    Next
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={nextStep}
+                  disabled={!validateStep()}
+                  className="w-full bg-black text-white py-4 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg font-semibold"
+                >
+                  Next
+                </button>
               </div>
             )}
 
-            {/* Step 4: Electric Bill */}
-            {currentStep === 4 && (
+            {/* Step 2: Electric Bill */}
+            {currentStep === 2 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   What&apos;s your average monthly electric bill?
@@ -361,8 +296,42 @@ function FormContent() {
               </div>
             )}
 
-            {/* Step 5: Email */}
-            {currentStep === 5 && (
+            {/* Step 3: ZIP Code */}
+            {currentStep === 3 && (
+              <div className="space-y-6">
+                <label className="block text-gray-900 font-semibold text-2xl mb-4">
+                  What&apos;s your ZIP code?
+                </label>
+                <input
+                  type="text"
+                  value={formData.zipCode}
+                  onChange={(e) => updateFormData('zipCode', e.target.value.replace(/\D/g, '').slice(0, 5))}
+                  placeholder="Enter your ZIP code"
+                  className="w-full px-6 py-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-lg"
+                  maxLength={5}
+                />
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={prevStep}
+                    className="flex-1 bg-gray-200 text-gray-700 py-4 rounded-lg hover:bg-gray-300 transition-colors text-lg font-semibold"
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    disabled={!validateStep()}
+                    className="flex-1 bg-black text-white py-4 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg font-semibold"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Email */}
+            {currentStep === 4 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   What&apos;s your email address?
@@ -394,8 +363,8 @@ function FormContent() {
               </div>
             )}
 
-            {/* Step 6: Name */}
-            {currentStep === 6 && (
+            {/* Step 5: Name */}
+            {currentStep === 5 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   What&apos;s your name?
@@ -436,8 +405,8 @@ function FormContent() {
               </div>
             )}
 
-            {/* Step 7: Phone */}
-            {currentStep === 7 && (
+            {/* Step 6: Phone */}
+            {currentStep === 6 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   What&apos;s your phone number?
@@ -447,6 +416,40 @@ function FormContent() {
                   value={formData.phone}
                   onChange={(e) => updateFormData('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
                   placeholder="(555) 555-5555"
+                  className="w-full px-6 py-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-lg"
+                />
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={prevStep}
+                    className="flex-1 bg-gray-200 text-gray-700 py-4 rounded-lg hover:bg-gray-300 transition-colors text-lg font-semibold"
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    disabled={!validateStep()}
+                    className="flex-1 bg-black text-white py-4 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg font-semibold"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 7: Street Address */}
+            {currentStep === 7 && (
+              <div className="space-y-6">
+                <label className="block text-gray-900 font-semibold text-2xl mb-4">
+                  What&apos;s your street address?
+                </label>
+                <input
+                  type="text"
+                  value={formData.address}
+                  onChange={(e) => updateFormData('address', e.target.value)}
+                  placeholder="123 Main Street"
+                  autoComplete="street-address"
                   className="w-full px-6 py-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-lg"
                 />
                 <ConsentCheckbox checked={consentToContact} onChange={setConsentToContact} />
