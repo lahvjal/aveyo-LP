@@ -76,22 +76,24 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
+  // Step order puts the easy qualifying questions first and the
+  // highest-friction ask (street address) last, when commitment is highest.
   const isStepValid = (step: number): boolean => {
     switch (step) {
       case 1:
-        return /^\d{5}$/.test(formData.zipCode)
-      case 2:
-        return formData.address.trim() !== ''
-      case 3:
         return formData.homeOwnership !== ''
-      case 4:
+      case 2:
         return formData.electricBill !== ''
-      case 5:
+      case 3:
+        return /^\d{5}$/.test(formData.zipCode)
+      case 4:
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
-      case 6:
+      case 5:
         return formData.firstName.trim() !== '' && formData.lastName.trim() !== ''
+      case 6:
+        return formData.phone.length >= 10
       case 7:
-        return formData.phone.length >= 10 && consentToContact
+        return formData.address.trim() !== '' && consentToContact
       default:
         return true
     }
@@ -210,67 +212,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
       </div>
 
       <form onSubmit={handleSubmit}>
-        {/* Step 1: ZIP Code */}
+        {/* Step 1: Home Ownership */}
         {currentStep === 1 && (
-          <div className="space-y-4">
-            <label className="block text-gray-900 font-medium mb-2">
-              What&apos;s your ZIP code?
-            </label>
-            <input
-              type="text"
-              value={formData.zipCode}
-              onChange={(e) => updateFormData('zipCode', e.target.value.replace(/\D/g, '').slice(0, 5))}
-              placeholder="Enter your ZIP code"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              maxLength={5}
-            />
-            <button
-              type="button"
-              onClick={nextStep}
-              disabled={!validateStep()}
-              className="w-full bg-gray-700 text-white py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-            >
-              Next
-            </button>
-          </div>
-        )}
-
-        {/* Step 2: Street Address */}
-        {currentStep === 2 && (
-          <div className="space-y-4">
-            <label className="block text-gray-900 font-medium mb-2">
-              What&apos;s your street address?
-            </label>
-            <input
-              type="text"
-              value={formData.address}
-              onChange={(e) => updateFormData('address', e.target.value)}
-              placeholder="123 Main Street"
-              autoComplete="street-address"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <div className="flex gap-3 pt-4">
-              <button
-                type="button"
-                onClick={prevStep}
-                className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors"
-              >
-                Back
-              </button>
-              <button
-                type="button"
-                onClick={nextStep}
-                disabled={!validateStep()}
-                className="flex-1 bg-gray-700 text-white py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Step 3: Home Ownership */}
-        {currentStep === 3 && (
           <div className="space-y-4">
             <label className="block text-gray-900 font-medium mb-4">
               Do you own your home?
@@ -299,28 +242,19 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
                 <span className="text-gray-900">No</span>
               </label>
             </div>
-            <div className="flex gap-3 pt-4">
-              <button
-                type="button"
-                onClick={prevStep}
-                className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors"
-              >
-                Back
-              </button>
-              <button
-                type="button"
-                onClick={nextStep}
-                disabled={!validateStep()}
-                className="flex-1 bg-gray-700 text-white py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-              >
-                Next
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={nextStep}
+              disabled={!validateStep()}
+              className="w-full bg-gray-700 text-white py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
           </div>
         )}
 
-        {/* Step 4: Electric Bill */}
-        {currentStep === 4 && (
+        {/* Step 2: Electric Bill */}
+        {currentStep === 2 && (
           <div className="space-y-4">
             <label className="block text-gray-900 font-medium mb-4">
               What&apos;s your average monthly electric bill?
@@ -360,8 +294,42 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           </div>
         )}
 
-        {/* Step 5: Email */}
-        {currentStep === 5 && (
+        {/* Step 3: ZIP Code */}
+        {currentStep === 3 && (
+          <div className="space-y-4">
+            <label className="block text-gray-900 font-medium mb-2">
+              What&apos;s your ZIP code?
+            </label>
+            <input
+              type="text"
+              value={formData.zipCode}
+              onChange={(e) => updateFormData('zipCode', e.target.value.replace(/\D/g, '').slice(0, 5))}
+              placeholder="Enter your ZIP code"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              maxLength={5}
+            />
+            <div className="flex gap-3 pt-4">
+              <button
+                type="button"
+                onClick={prevStep}
+                className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={nextStep}
+                disabled={!validateStep()}
+                className="flex-1 bg-gray-700 text-white py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 4: Email */}
+        {currentStep === 4 && (
           <div className="space-y-4">
             <label className="block text-gray-900 font-medium mb-2">
               What&apos;s your email address?
@@ -393,8 +361,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           </div>
         )}
 
-        {/* Step 6: Name */}
-        {currentStep === 6 && (
+        {/* Step 5: Name */}
+        {currentStep === 5 && (
           <div className="space-y-4">
             <label className="block text-gray-900 font-medium mb-2">
               What&apos;s your name?
@@ -435,8 +403,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           </div>
         )}
 
-        {/* Step 7: Phone */}
-        {currentStep === 7 && (
+        {/* Step 6: Phone */}
+        {currentStep === 6 && (
           <div className="space-y-4">
             <label className="block text-gray-900 font-medium mb-2">
               What&apos;s your phone number?
@@ -446,6 +414,40 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
               value={formData.phone}
               onChange={(e) => updateFormData('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
               placeholder="(555) 555-5555"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <div className="flex gap-3 pt-4">
+              <button
+                type="button"
+                onClick={prevStep}
+                className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={nextStep}
+                disabled={!validateStep()}
+                className="flex-1 bg-gray-700 text-white py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 7: Street Address */}
+        {currentStep === 7 && (
+          <div className="space-y-4">
+            <label className="block text-gray-900 font-medium mb-2">
+              What&apos;s your street address?
+            </label>
+            <input
+              type="text"
+              value={formData.address}
+              onChange={(e) => updateFormData('address', e.target.value)}
+              placeholder="123 Main Street"
+              autoComplete="street-address"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <ConsentCheckbox checked={consentToContact} onChange={setConsentToContact} />
