@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, FormEvent, useEffect } from 'react'
-import { trackLead } from '@/lib/meta-pixel'
+import { useState, FormEvent, useEffect, useRef } from 'react'
+import { trackLead, trackStepCompleted } from '@/lib/meta-pixel'
 import { submitLead } from '@/lib/lead-submission'
 import ConsentCheckbox from '@/components/ConsentCheckbox'
 
@@ -109,8 +109,20 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
     return true
   }
 
+  // Fire each step's custom pixel event only once per session, so navigating
+  // back and re-advancing doesn't inflate funnel counts in Events Manager.
+  const trackedStepsRef = useRef<Set<number>>(new Set())
+
+  const markStepCompleted = (step: number) => {
+    if (!trackedStepsRef.current.has(step)) {
+      trackedStepsRef.current.add(step)
+      trackStepCompleted(step, pageSlug, offerName)
+    }
+  }
+
   const nextStep = () => {
     if (validateStep() && currentStep < totalSteps) {
+      markStepCompleted(currentStep)
       setCurrentStep(currentStep + 1)
     }
   }
@@ -161,6 +173,7 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
         }
 
         const result = await submitLead(payload)
+        markStepCompleted(totalSteps)
         trackLead(formData.pageSlug, formData.offerName, result.eventId)
         setSubmitted(true)
       } catch (error) {

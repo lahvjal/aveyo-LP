@@ -3,6 +3,7 @@
 import { useState, FormEvent, useEffect } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { trackStepCompleted } from '@/lib/meta-pixel'
 
 export default function Page2() {
   const [zipCode, setZipCode] = useState('')
@@ -19,6 +20,8 @@ export default function Page2() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     if (zipCode.length === 5) {
+      // Step 1 (zip) completes on this page; /form starts at step 2.
+      trackStepCompleted(1, '2', 'Go Solar With $0 Down')
       // Pass through all URL parameters plus the page info
       const params = new URLSearchParams(urlParams)
       params.set('zip', zipCode)
