@@ -122,8 +122,18 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
     }
   }
 
+  // Meta URL-rule custom conversions match on the URL each pixel event
+  // carries, so stamp the current step into the query string. Must run
+  // before the step event fires so that event carries the new URL.
+  const syncStepToUrl = (step: number) => {
+    const params = new URLSearchParams(window.location.search)
+    params.set('step', String(step))
+    window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)
+  }
+
   const nextStep = () => {
     if (validateStep() && currentStep < totalSteps) {
+      syncStepToUrl(currentStep + 1)
       markStepCompleted(currentStep)
       setCurrentStep(currentStep + 1)
     }
@@ -131,6 +141,7 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
 
   const prevStep = () => {
     if (currentStep > 1) {
+      syncStepToUrl(currentStep - 1)
       setCurrentStep(currentStep - 1)
     }
   }
