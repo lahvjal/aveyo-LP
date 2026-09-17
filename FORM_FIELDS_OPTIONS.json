@@ -8,6 +8,21 @@
         "format": "string",
         "example": "60601"
       },
+      "utilityCompany": {
+        "type": "radio",
+        "required": true,
+        "options": [
+          "Ameren",
+          "ComEd",
+          "Other"
+        ],
+        "qualification": {
+          "Ameren": "disqualified",
+          "ComEd": "disqualified",
+          "Other": "qualified"
+        },
+        "example": "Other"
+      },
       "homeOwnership": {
         "type": "radio",
         "required": true,
@@ -141,6 +156,7 @@
     "email": "john.smith@example.com",
     "phone": "+13125551234",
     "zipCode": "60601",
+    "utilityCompany": "Other",
     "homeOwnership": "yes",
     "electricBill": "$150 - $200",
     "pageSlug": "1",

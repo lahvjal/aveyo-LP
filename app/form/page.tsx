@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { trackLead, trackStepCompleted } from '@/lib/meta-pixel'
 import { submitLead } from '@/lib/lead-submission'
 import ConsentCheckbox from '@/components/ConsentCheckbox'
+import DisqualificationMessage from '@/components/DisqualificationMessage'
 
 interface FormData {
   firstName: string
@@ -15,6 +16,7 @@ interface FormData {
   phone: string
   zipCode: string
   address: string
+  utilityCompany: string
   homeOwnership: string
   electricBill: string
   pageSlug: string
@@ -38,6 +40,7 @@ function FormContent() {
     phone: '',
     zipCode: initialZip,
     address: '',
+    utilityCompany: '',
     homeOwnership: '',
     electricBill: '',
     pageSlug: searchParams.get('pageSlug') || '',
@@ -49,11 +52,12 @@ function FormContent() {
     fbclid: searchParams.get('fbclid') || ''
   })
   const [submitted, setSubmitted] = useState(false)
+  const [disqualified, setDisqualified] = useState(false)
   const [consentToContact, setConsentToContact] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const totalSteps = 7
+  const totalSteps = 8
   const progress = (currentStep / totalSteps) * 100
 
   const updateFormData = (field: keyof FormData, value: string) => {
@@ -71,12 +75,14 @@ function FormContent() {
       case 3:
         return /^\d{5}$/.test(formData.zipCode)
       case 4:
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
+        return formData.utilityCompany === 'Other'
       case 5:
-        return formData.firstName.trim() !== '' && formData.lastName.trim() !== ''
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
       case 6:
-        return formData.phone.length >= 10
+        return formData.firstName.trim() !== '' && formData.lastName.trim() !== ''
       case 7:
+        return formData.phone.length >= 10
+      case 8:
         return formData.address.trim() !== '' && consentToContact
       default:
         return true
@@ -104,7 +110,8 @@ function FormContent() {
   const markStepCompleted = (step: number) => {
     if (!trackedStepsRef.current.has(step)) {
       trackedStepsRef.current.add(step)
-      trackStepCompleted(step, formData.pageSlug, formData.offerName)
+      const trackedStep = step === 4 ? 8 : step > 4 ? step - 1 : step
+      trackStepCompleted(trackedStep, formData.pageSlug, formData.offerName)
     }
   }
 
@@ -113,7 +120,8 @@ function FormContent() {
   // before the step event fires so that event carries the new URL.
   const syncStepToUrl = (step: number) => {
     const params = new URLSearchParams(window.location.search)
-    params.set('step', String(step))
+    const urlStep = step === 4 ? 'utility' : String(step > 4 ? step - 1 : step)
+    params.set('step', urlStep)
     window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)
   }
 
@@ -129,6 +137,14 @@ function FormContent() {
     if (currentStep > 1) {
       syncStepToUrl(currentStep - 1)
       setCurrentStep(currentStep - 1)
+    }
+  }
+
+  const handleUtilityCompanyChange = (utilityCompany: string) => {
+    updateFormData('utilityCompany', utilityCompany)
+
+    if (utilityCompany === 'Ameren' || utilityCompany === 'ComEd') {
+      setDisqualified(true)
     }
   }
 
@@ -158,6 +174,7 @@ function FormContent() {
           phone: formData.phone ? `+1${formData.phone}` : '',
           zipCode: formData.zipCode,
           address: formData.address,
+          utilityCompany: formData.utilityCompany,
           homeOwnership: formData.homeOwnership,
           electricBill: formData.electricBill,
           pageSlug: formData.pageSlug,
@@ -192,6 +209,16 @@ function FormContent() {
           <div className="text-green-500 text-6xl mb-6">✓</div>
           <h3 className="text-3xl font-bold text-gray-900 mb-4">Thank you for your submission!</h3>
           <p className="text-gray-700 text-lg">Our team is putting together a personalized quote for your home. We&apos;ll be reaching out in 1-2 business days.</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (disqualified) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center p-8">
+        <div className="max-w-2xl w-full">
+          <DisqualificationMessage spacious />
         </div>
       </div>
     )
@@ -341,8 +368,49 @@ function FormContent() {
               </div>
             )}
 
-            {/* Step 4: Email */}
+            {/* Step 4: Utility Company */}
             {currentStep === 4 && (
+              <div className="space-y-6">
+                <label className="block text-gray-900 font-semibold text-2xl mb-4">
+                  Who is your electric utility company?
+                </label>
+                <div className="space-y-3">
+                  {['Ameren', 'ComEd', 'Other'].map((utilityCompany) => (
+                    <label key={utilityCompany} className="flex items-center p-6 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-black transition-colors">
+                      <input
+                        type="radio"
+                        name="utilityCompany"
+                        value={utilityCompany}
+                        checked={formData.utilityCompany === utilityCompany}
+                        onChange={(e) => handleUtilityCompanyChange(e.target.value)}
+                        className="mr-4 w-5 h-5"
+                      />
+                      <span className="text-gray-900 text-lg">{utilityCompany}</span>
+                    </label>
+                  ))}
+                </div>
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={prevStep}
+                    className="flex-1 bg-gray-200 text-gray-700 py-4 rounded-lg hover:bg-gray-300 transition-colors text-lg font-semibold"
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    disabled={!validateStep()}
+                    className="flex-1 bg-black text-white py-4 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg font-semibold"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 5: Email */}
+            {currentStep === 5 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   What&apos;s your email address?
@@ -374,8 +442,8 @@ function FormContent() {
               </div>
             )}
 
-            {/* Step 5: Name */}
-            {currentStep === 5 && (
+            {/* Step 6: Name */}
+            {currentStep === 6 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   What&apos;s your name?
@@ -416,8 +484,8 @@ function FormContent() {
               </div>
             )}
 
-            {/* Step 6: Phone */}
-            {currentStep === 6 && (
+            {/* Step 7: Phone */}
+            {currentStep === 7 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   What&apos;s your phone number?
@@ -449,8 +517,8 @@ function FormContent() {
               </div>
             )}
 
-            {/* Step 7: Street Address */}
-            {currentStep === 7 && (
+            {/* Step 8: Street Address */}
+            {currentStep === 8 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   What&apos;s your street address?

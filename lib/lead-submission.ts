@@ -5,6 +5,7 @@ export interface LeadPayload {
   phone: string
   zipCode: string
   address: string
+  utilityCompany: string
   homeOwnership: string
   electricBill: string
   pageSlug: string

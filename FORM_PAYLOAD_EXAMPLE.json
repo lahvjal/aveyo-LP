@@ -12,6 +12,7 @@
     "zipCode": "60601",
     "address": "",
     "city": "",
+    "utilityCompany": "Other",
     "homeOwnership": "yes",
     "electricBill": "$150 - $200",
     "pageSlug": "1",
@@ -32,6 +33,7 @@
     "zipCode": "5-digit ZIP code (string)",
     "address": "Street address (empty string on landing pages 1 and 2)",
     "city": "City (empty string on landing pages 1 and 2)",
+    "utilityCompany": "Always 'Other' for accepted submissions; Ameren and ComEd end the flow without submitting",
     "homeOwnership": "Either 'yes' or 'no'",
     "electricBill": "One of: '$0 - $100', '$100 - $150', '$150 - $200', '$200 - $300', '$300+'",
     "pageSlug": "Page number: '1', '2', or '3'",
@@ -55,6 +57,7 @@
     "The phone field is formatted with +1 prefix (e.g., +13125551234)",
     "The pageSlug field identifies which page the user submitted from",
     "Page 2 passes tracking data through to the /form page via URL parameters",
+    "Ameren and ComEd selections show the alternate ending and are not sent to the API",
     "The API returns an eventId used by the Meta Pixel and connected Conversions API Gateway for Lead-event deduplication"
   ]
 }

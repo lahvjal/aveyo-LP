@@ -2,13 +2,13 @@
 
 ## Overview
 
-All three landing pages now send **the same payload structure**. Landing Pages 1 and 2 send empty strings for `address` and `city`, while Landing Page 3 sends populated values.
+All three landing pages now send **the same payload structure**. Landing Pages 1 and 2 send empty strings for `address` and `city`, while Landing Page 3 sends populated values. Only users who select `"Other"` for `utilityCompany` reach submission; Ameren and ComEd selections end the flow without creating a lead.
 
 ---
 
 ## Consistent Payload Structure (All Pages)
 
-All landing pages now send the same 17 fields + timestamp (18 keys total):
+All landing pages now send the same 18 fields + timestamp (19 keys total):
 
 ```json
 {
@@ -19,6 +19,7 @@ All landing pages now send the same 17 fields + timestamp (18 keys total):
   "zipCode": "60601",
   "address": "123 Main Street",
   "city": "Chicago",
+  "utilityCompany": "Other",
   "homeOwnership": "yes",
   "electricBill": "$150 - $200",
   "pageSlug": "3",
@@ -76,6 +77,7 @@ app.post('/webhook', (req, res) => {
     zipCode,
     address,        // Always present (empty string or value)
     city,           // Always present (empty string or value)
+    utilityCompany, // Always "Other" for accepted submissions
     homeOwnership,
     electricBill,
     pageSlug,
@@ -123,6 +125,7 @@ CREATE TABLE leads (
   zip_code VARCHAR(5) NOT NULL,
   address VARCHAR(255) NOT NULL DEFAULT '',    -- Empty string default
   city VARCHAR(100) NOT NULL DEFAULT '',       -- Empty string default
+  utility_company VARCHAR(50) NOT NULL,
   home_ownership VARCHAR(10) NOT NULL,
   electric_bill VARCHAR(50) NOT NULL,
   page_slug VARCHAR(10) NOT NULL,
@@ -150,6 +153,7 @@ const lead = {
   zip_code: zipCode,
   address: address || null,        // Convert "" to null
   city: city || null,              // Convert "" to null
+  utility_company: utilityCompany,
   home_ownership: homeOwnership,
   // ... other fields
 };
@@ -184,6 +188,7 @@ const buildCRMPayload = (formData) => {
     lastname: formData.lastName,
     phone: formData.phone,
     zip: formData.zipCode,
+    utility_company: formData.utilityCompany,
     home_ownership: formData.homeOwnership,
     electric_bill: formData.electricBill,
     page_source: formData.pageSlug,
@@ -227,6 +232,8 @@ const buildCRMPayload = (formData) => {
 - [ ] Submit form from Landing Page 1 - verify `address: ""` and `city: ""`
 - [ ] Submit form from Landing Page 2 - verify `address: ""` and `city: ""`
 - [ ] Submit form from Landing Page 3 - verify `address` and `city` have values
+- [ ] Select Ameren or ComEd on every form - verify the alternate ending appears and no API request is sent
+- [ ] Select Other on every form - verify the user can continue and `utilityCompany: "Other"` is submitted
 - [ ] Check database inserts handle empty strings correctly
 - [ ] Verify CRM integration filters out empty address fields
 - [ ] Test webhook accepts consistent payload structure

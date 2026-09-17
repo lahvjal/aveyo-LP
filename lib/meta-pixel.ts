@@ -15,6 +15,7 @@ const STEP_EVENT_NAMES: Record<number, string> = {
   5: 'Step5_Name_Completed',
   6: 'Step6_Phone_Completed',
   7: 'Step7_Address_Completed',
+  8: 'UtilityCompany_Completed',
 }
 
 export function trackStepCompleted(step: number, pageSlug: string, offerName: string) {

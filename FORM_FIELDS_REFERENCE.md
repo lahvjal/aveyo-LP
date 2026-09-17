@@ -10,7 +10,18 @@
 
 ---
 
-### 2. homeOwnership
+### 2. utilityCompany
+**Type:** Radio button (single select)
+**Options:**
+- `"Ameren"` - Disqualified; the form ends without submitting a lead
+- `"ComEd"` - Disqualified; the form ends without submitting a lead
+- `"Other"` - Qualified; the user can continue
+
+**Example:** "Other"
+
+---
+
+### 3. homeOwnership
 **Type:** Radio button (single select)
 **Options:**
 - `"yes"` - Yes (I own my home)
@@ -20,7 +31,7 @@
 
 ---
 
-### 3. electricBill
+### 4. electricBill
 **Type:** Radio button (single select)
 **Options:**
 - `"$0 - $100"`
@@ -33,7 +44,7 @@
 
 ---
 
-### 4. email
+### 5. email
 **Type:** Email input
 **Validation:** Must be valid email format (contains @ and domain)
 **Format:** String
@@ -41,7 +52,7 @@
 
 ---
 
-### 5. firstName
+### 6. firstName
 **Type:** Text input
 **Validation:** Required, must not be empty
 **Format:** String
@@ -49,7 +60,7 @@
 
 ---
 
-### 6. lastName
+### 7. lastName
 **Type:** Text input
 **Validation:** Required, must not be empty
 **Format:** String
@@ -57,7 +68,7 @@
 
 ---
 
-### 7. phone
+### 8. phone
 **Type:** Phone number input
 **Validation:** Must be at least 10 digits
 **Format:** String (digits only, no spaces, dashes, or parentheses)
@@ -67,7 +78,7 @@
 
 ## Tracking Fields (Automatically Captured)
 
-### 8. landing_page
+### 9. landing_page
 **Type:** Auto-populated
 **Options:**
 - `"1"` - Landing Page 1 (Multi-step form with hero image)
@@ -78,7 +89,7 @@
 
 ---
 
-### 9. offer_name
+### 10. offer_name
 **Type:** Auto-populated based on landing page
 **Options:**
 - `"Powering What Matters Most"` - (Landing Page 1)
@@ -89,7 +100,7 @@
 
 ---
 
-### 10. utm_source
+### 11. utm_source
 **Type:** URL parameter extraction
 **Format:** String
 **Source:** Extracted from `?utm_source=` in URL
@@ -98,7 +109,7 @@
 
 ---
 
-### 11. utm_campaign
+### 12. utm_campaign
 **Type:** URL parameter extraction
 **Format:** String
 **Source:** Extracted from `?utm_campaign=` in URL
@@ -107,7 +118,7 @@
 
 ---
 
-### 12. utm_adset
+### 13. utm_adset
 **Type:** URL parameter extraction
 **Format:** String
 **Source:** Extracted from `?utm_adset=` in URL
@@ -116,7 +127,7 @@
 
 ---
 
-### 13. utm_ad
+### 14. utm_ad
 **Type:** URL parameter extraction
 **Format:** String
 **Source:** Extracted from `?utm_ad=` in URL
@@ -125,7 +136,7 @@
 
 ---
 
-### 14. fbclid
+### 15. fbclid
 **Type:** URL parameter extraction
 **Format:** String
 **Source:** Extracted from `?fbclid=` in URL (Facebook Click ID)
@@ -134,7 +145,7 @@
 
 ---
 
-### 15. submittedAt
+### 16. submittedAt
 **Type:** Auto-generated timestamp
 **Format:** ISO 8601 date-time string
 **Example:** "2026-03-02T15:30:45.123Z"
@@ -146,6 +157,7 @@
 ```json
 {
   "zipCode": "60601",
+  "utilityCompany": "Other",
   "homeOwnership": "yes",
   "electricBill": "$150 - $200",
   "email": "john.smith@example.com",
@@ -185,6 +197,7 @@ https://yourdomain.com/3?utm_source=instagram&utm_campaign=solar-awareness&utm_a
 | Field Name      | Type           | Required | Format               | Source         |
 |-----------------|----------------|----------|----------------------|----------------|
 | zipCode         | Text Input     | Yes      | 5 digits             | User Entry     |
+| utilityCompany  | Radio (3)      | Yes      | "Other" for submitted leads | User Selection |
 | homeOwnership   | Radio (2)      | Yes      | "yes" or "no"        | User Selection |
 | electricBill    | Radio (5)      | Yes      | String ranges        | User Selection |
 | email           | Email Input    | Yes      | Email format         | User Entry     |
@@ -204,6 +217,8 @@ https://yourdomain.com/3?utm_source=instagram&utm_campaign=solar-awareness&utm_a
 
 **Notes:**
 - All fields are included in every submission
+- Selecting Ameren or ComEd immediately shows the alternate ending and does not submit a lead
+- Only users who select Other can continue and submit
 - Tracking fields will be empty strings ("") if not present in URL
 - Phone field automatically strips non-numeric characters
 - All forms validate data before submission

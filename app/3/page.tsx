@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { trackLead } from '@/lib/meta-pixel'
 import { submitLead } from '@/lib/lead-submission'
 import ConsentCheckbox from '@/components/ConsentCheckbox'
+import DisqualificationMessage from '@/components/DisqualificationMessage'
 
 interface FormData {
   firstName: string
@@ -13,6 +14,7 @@ interface FormData {
   phone: string
   zipCode: string
   address: string
+  utilityCompany: string
   homeOwnership: string
   electricBill: string
   pageSlug: string
@@ -32,6 +34,7 @@ export default function Page3() {
     phone: '',
     zipCode: '',
     address: '',
+    utilityCompany: '',
     homeOwnership: '',
     electricBill: '',
     pageSlug: '3',
@@ -43,6 +46,7 @@ export default function Page3() {
     fbclid: ''
   })
   const [submitted, setSubmitted] = useState(false)
+  const [disqualified, setDisqualified] = useState(false)
   const [consentToContact, setConsentToContact] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
@@ -68,10 +72,18 @@ export default function Page3() {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
+  const handleUtilityCompanyChange = (utilityCompany: string) => {
+    updateFormData('utilityCompany', utilityCompany)
+
+    if (utilityCompany === 'Ameren' || utilityCompany === 'ComEd') {
+      setDisqualified(true)
+    }
+  }
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
-    if (!consentToContact || isSubmitting) {
+    if (formData.utilityCompany !== 'Other' || !consentToContact || isSubmitting) {
       return
     }
 
@@ -86,6 +98,7 @@ export default function Page3() {
         phone: formData.phone ? `+1${formData.phone}` : '',
         zipCode: formData.zipCode,
         address: formData.address,
+        utilityCompany: formData.utilityCompany,
         homeOwnership: formData.homeOwnership,
         electricBill: formData.electricBill,
         pageSlug: formData.pageSlug,
@@ -120,6 +133,16 @@ export default function Page3() {
           <p className="text-gray-700 text-lg">
             Your personalized solar quote is being prepared. Our team will reach out within 24 hours to discuss your savings potential.
           </p>
+        </div>
+      </div>
+    )
+  }
+
+  if (disqualified) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-8">
+        <div className="max-w-2xl w-full">
+          <DisqualificationMessage spacious />
         </div>
       </div>
     )
@@ -180,6 +203,38 @@ export default function Page3() {
                 maxLength={5}
                 required
               />
+            </div>
+
+            {/* Utility Company */}
+            <div>
+              <label className="block text-gray-900 font-semibold text-base md:text-lg mb-3">
+                Who is your electric utility company?
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+                {['Ameren', 'ComEd', 'Other'].map((utilityCompany) => (
+                  <label key={utilityCompany} className="relative flex items-center justify-center p-4 md:p-6 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-gray-900 transition-colors min-h-[60px]">
+                    <input
+                      type="radio"
+                      name="utilityCompany"
+                      value={utilityCompany}
+                      checked={formData.utilityCompany === utilityCompany}
+                      onChange={(e) => handleUtilityCompanyChange(e.target.value)}
+                      className="sr-only"
+                      required
+                    />
+                    <span className={`text-sm md:text-lg font-medium ${formData.utilityCompany === utilityCompany ? 'text-gray-900' : 'text-gray-600'}`}>
+                      {utilityCompany}
+                    </span>
+                    {formData.utilityCompany === utilityCompany && (
+                      <div className="absolute top-3 right-3 w-6 h-6 bg-gray-900 rounded-full flex items-center justify-center">
+                        <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                    )}
+                  </label>
+                ))}
+              </div>
             </div>
 
             {/* Address */}
@@ -361,7 +416,7 @@ export default function Page3() {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={!consentToContact || isSubmitting}
+              disabled={formData.utilityCompany !== 'Other' || !consentToContact || isSubmitting}
               className="w-full bg-gray-900 text-white py-5 rounded-xl hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg font-semibold shadow-lg"
             >
               {isSubmitting ? 'Submitting…' : 'Get My Free Quote →'}

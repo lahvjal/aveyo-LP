@@ -4,6 +4,7 @@ import { useState, FormEvent, useEffect, useRef } from 'react'
 import { trackLead, trackStepCompleted } from '@/lib/meta-pixel'
 import { submitLead } from '@/lib/lead-submission'
 import ConsentCheckbox from '@/components/ConsentCheckbox'
+import DisqualificationMessage from '@/components/DisqualificationMessage'
 
 interface FormData {
   firstName: string
@@ -12,6 +13,7 @@ interface FormData {
   phone: string
   zipCode: string
   address: string
+  utilityCompany: string
   homeOwnership: string
   electricBill: string
   pageSlug: string
@@ -37,6 +39,7 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
     phone: '',
     zipCode: '',
     address: '',
+    utilityCompany: '',
     homeOwnership: '',
     electricBill: '',
     pageSlug: pageSlug,
@@ -48,6 +51,7 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
     fbclid: ''
   })
   const [submitted, setSubmitted] = useState(false)
+  const [disqualified, setDisqualified] = useState(false)
   const [consentToContact, setConsentToContact] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
@@ -69,7 +73,7 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
     }
   }, [pageSlug, offerName])
 
-  const totalSteps = 7
+  const totalSteps = 8
   const progress = (currentStep / totalSteps) * 100
 
   const updateFormData = (field: keyof FormData, value: string) => {
@@ -87,12 +91,14 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
       case 3:
         return /^\d{5}$/.test(formData.zipCode)
       case 4:
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
+        return formData.utilityCompany === 'Other'
       case 5:
-        return formData.firstName.trim() !== '' && formData.lastName.trim() !== ''
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
       case 6:
-        return formData.phone.length >= 10
+        return formData.firstName.trim() !== '' && formData.lastName.trim() !== ''
       case 7:
+        return formData.phone.length >= 10
+      case 8:
         return formData.address.trim() !== '' && consentToContact
       default:
         return true
@@ -118,7 +124,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
   const markStepCompleted = (step: number) => {
     if (!trackedStepsRef.current.has(step)) {
       trackedStepsRef.current.add(step)
-      trackStepCompleted(step, pageSlug, offerName)
+      const trackedStep = step === 4 ? 8 : step > 4 ? step - 1 : step
+      trackStepCompleted(trackedStep, pageSlug, offerName)
     }
   }
 
@@ -127,7 +134,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
   // before the step event fires so that event carries the new URL.
   const syncStepToUrl = (step: number) => {
     const params = new URLSearchParams(window.location.search)
-    params.set('step', String(step))
+    const urlStep = step === 4 ? 'utility' : String(step > 4 ? step - 1 : step)
+    params.set('step', urlStep)
     window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)
   }
 
@@ -143,6 +151,14 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
     if (currentStep > 1) {
       syncStepToUrl(currentStep - 1)
       setCurrentStep(currentStep - 1)
+    }
+  }
+
+  const handleUtilityCompanyChange = (utilityCompany: string) => {
+    updateFormData('utilityCompany', utilityCompany)
+
+    if (utilityCompany === 'Ameren' || utilityCompany === 'ComEd') {
+      setDisqualified(true)
     }
   }
 
@@ -172,6 +188,7 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           phone: formData.phone ? `+1${formData.phone}` : '',
           zipCode: formData.zipCode,
           address: formData.address,
+          utilityCompany: formData.utilityCompany,
           homeOwnership: formData.homeOwnership,
           electricBill: formData.electricBill,
           pageSlug: formData.pageSlug,
@@ -207,6 +224,10 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
         <p className="text-gray-700">Our team is putting together a personalized quote for your home. We&apos;ll be reaching out in 1-2 business days.</p>
       </div>
     )
+  }
+
+  if (disqualified) {
+    return <DisqualificationMessage />
   }
 
   return (
@@ -339,8 +360,49 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           </div>
         )}
 
-        {/* Step 4: Email */}
+        {/* Step 4: Utility Company */}
         {currentStep === 4 && (
+          <div className="space-y-4">
+            <label className="block text-gray-900 font-medium mb-4">
+              Who is your electric utility company?
+            </label>
+            <div className="space-y-3">
+              {['Ameren', 'ComEd', 'Other'].map((utilityCompany) => (
+                <label key={utilityCompany} className="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
+                  <input
+                    type="radio"
+                    name="utilityCompany"
+                    value={utilityCompany}
+                    checked={formData.utilityCompany === utilityCompany}
+                    onChange={(e) => handleUtilityCompanyChange(e.target.value)}
+                    className="mr-3"
+                  />
+                  <span className="text-gray-900">{utilityCompany}</span>
+                </label>
+              ))}
+            </div>
+            <div className="flex gap-3 pt-4">
+              <button
+                type="button"
+                onClick={prevStep}
+                className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={nextStep}
+                disabled={!validateStep()}
+                className="flex-1 bg-gray-700 text-white py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 5: Email */}
+        {currentStep === 5 && (
           <div className="space-y-4">
             <label className="block text-gray-900 font-medium mb-2">
               What&apos;s your email address?
@@ -372,8 +434,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           </div>
         )}
 
-        {/* Step 5: Name */}
-        {currentStep === 5 && (
+        {/* Step 6: Name */}
+        {currentStep === 6 && (
           <div className="space-y-4">
             <label className="block text-gray-900 font-medium mb-2">
               What&apos;s your name?
@@ -414,8 +476,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           </div>
         )}
 
-        {/* Step 6: Phone */}
-        {currentStep === 6 && (
+        {/* Step 7: Phone */}
+        {currentStep === 7 && (
           <div className="space-y-4">
             <label className="block text-gray-900 font-medium mb-2">
               What&apos;s your phone number?
@@ -447,8 +509,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           </div>
         )}
 
-        {/* Step 7: Street Address */}
-        {currentStep === 7 && (
+        {/* Step 8: Street Address */}
+        {currentStep === 8 && (
           <div className="space-y-4">
             <label className="block text-gray-900 font-medium mb-2">
               What&apos;s your street address?
