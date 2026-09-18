@@ -64,18 +64,18 @@ function FormContent() {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
-  // Step order puts the easy qualifying questions first and the
-  // highest-friction ask (street address) last, when commitment is highest.
+  // This page follows the ZIP capture on landing-page variant 2, so utility
+  // is first here and remains the visitor's second question overall.
   const isStepValid = (step: number): boolean => {
     switch (step) {
       case 1:
-        return formData.homeOwnership !== ''
-      case 2:
-        return formData.electricBill !== ''
-      case 3:
-        return /^\d{5}$/.test(formData.zipCode)
-      case 4:
         return formData.utilityCompany === 'Other'
+      case 2:
+        return formData.homeOwnership !== ''
+      case 3:
+        return formData.electricBill !== ''
+      case 4:
+        return /^\d{5}$/.test(formData.zipCode)
       case 5:
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
       case 6:
@@ -103,14 +103,14 @@ function FormContent() {
 
   // Fire each step's custom pixel event only once per session, so navigating
   // back and re-advancing doesn't inflate funnel counts in Events Manager.
-  // A zip passed in from the landing page means the zip step (3) already
+  // A zip passed in from the landing page means the zip step (4) already
   // fired there; it stays pre-filled here.
-  const trackedStepsRef = useRef<Set<number>>(new Set(initialZip ? [3] : []))
+  const trackedStepsRef = useRef<Set<number>>(new Set(initialZip ? [4] : []))
 
   const markStepCompleted = (step: number) => {
     if (!trackedStepsRef.current.has(step)) {
       trackedStepsRef.current.add(step)
-      const trackedStep = step === 4 ? 8 : step > 4 ? step - 1 : step
+      const trackedStep = step === 1 ? 8 : step - 1
       trackStepCompleted(trackedStep, formData.pageSlug, formData.offerName)
     }
   }
@@ -120,7 +120,7 @@ function FormContent() {
   // before the step event fires so that event carries the new URL.
   const syncStepToUrl = (step: number) => {
     const params = new URLSearchParams(window.location.search)
-    const urlStep = step === 4 ? 'utility' : String(step > 4 ? step - 1 : step)
+    const urlStep = step === 1 ? 'utility' : String(step - 1)
     params.set('step', urlStep)
     window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)
   }
@@ -252,8 +252,8 @@ function FormContent() {
           </div>
 
           <form onSubmit={handleSubmit}>
-            {/* Step 1: Home Ownership */}
-            {currentStep === 1 && (
+            {/* Step 2: Home Ownership */}
+            {currentStep === 2 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   Do you own your home?
@@ -282,19 +282,28 @@ function FormContent() {
                     <span className="text-gray-900 text-lg">No</span>
                   </label>
                 </div>
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  disabled={!validateStep()}
-                  className="w-full bg-black text-white py-4 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg font-semibold"
-                >
-                  Next
-                </button>
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={prevStep}
+                    className="flex-1 bg-gray-200 text-gray-700 py-4 rounded-lg hover:bg-gray-300 transition-colors text-lg font-semibold"
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    disabled={!validateStep()}
+                    className="flex-1 bg-black text-white py-4 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg font-semibold"
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
             )}
 
-            {/* Step 2: Electric Bill */}
-            {currentStep === 2 && (
+            {/* Step 3: Electric Bill */}
+            {currentStep === 3 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   What&apos;s your average monthly electric bill?
@@ -334,8 +343,8 @@ function FormContent() {
               </div>
             )}
 
-            {/* Step 3: ZIP Code */}
-            {currentStep === 3 && (
+            {/* Step 4: ZIP Code */}
+            {currentStep === 4 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   What&apos;s your ZIP code?
@@ -368,8 +377,8 @@ function FormContent() {
               </div>
             )}
 
-            {/* Step 4: Utility Company */}
-            {currentStep === 4 && (
+            {/* Step 1: Utility Company */}
+            {currentStep === 1 && (
               <div className="space-y-6">
                 <label className="block text-gray-900 font-semibold text-2xl mb-4">
                   Who is your electric utility company?
@@ -389,23 +398,14 @@ function FormContent() {
                     </label>
                   ))}
                 </div>
-                <div className="flex gap-4 pt-4">
-                  <button
-                    type="button"
-                    onClick={prevStep}
-                    className="flex-1 bg-gray-200 text-gray-700 py-4 rounded-lg hover:bg-gray-300 transition-colors text-lg font-semibold"
-                  >
-                    Back
-                  </button>
-                  <button
-                    type="button"
-                    onClick={nextStep}
-                    disabled={!validateStep()}
-                    className="flex-1 bg-black text-white py-4 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg font-semibold"
-                  >
-                    Next
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={nextStep}
+                  disabled={!validateStep()}
+                  className="w-full bg-black text-white py-4 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg font-semibold"
+                >
+                  Next
+                </button>
               </div>
             )}
 

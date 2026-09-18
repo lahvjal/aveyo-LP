@@ -80,18 +80,18 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
-  // Step order puts the easy qualifying questions first and the
-  // highest-friction ask (street address) last, when commitment is highest.
+  // Step order opens with an easy qualifying question, screens unsupported
+  // utilities immediately, and leaves the highest-friction ask for last.
   const isStepValid = (step: number): boolean => {
     switch (step) {
       case 1:
         return formData.homeOwnership !== ''
       case 2:
-        return formData.electricBill !== ''
-      case 3:
-        return /^\d{5}$/.test(formData.zipCode)
-      case 4:
         return formData.utilityCompany === 'Other'
+      case 3:
+        return formData.electricBill !== ''
+      case 4:
+        return /^\d{5}$/.test(formData.zipCode)
       case 5:
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
       case 6:
@@ -124,7 +124,7 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
   const markStepCompleted = (step: number) => {
     if (!trackedStepsRef.current.has(step)) {
       trackedStepsRef.current.add(step)
-      const trackedStep = step === 4 ? 8 : step > 4 ? step - 1 : step
+      const trackedStep = step === 2 ? 8 : step > 2 ? step - 1 : step
       trackStepCompleted(trackedStep, pageSlug, offerName)
     }
   }
@@ -134,7 +134,7 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
   // before the step event fires so that event carries the new URL.
   const syncStepToUrl = (step: number) => {
     const params = new URLSearchParams(window.location.search)
-    const urlStep = step === 4 ? 'utility' : String(step > 4 ? step - 1 : step)
+    const urlStep = step === 2 ? 'utility' : String(step > 2 ? step - 1 : step)
     params.set('step', urlStep)
     window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)
   }
@@ -285,8 +285,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           </div>
         )}
 
-        {/* Step 2: Electric Bill */}
-        {currentStep === 2 && (
+        {/* Step 3: Electric Bill */}
+        {currentStep === 3 && (
           <div className="space-y-4">
             <label className="block text-gray-900 font-medium mb-4">
               What&apos;s your average monthly electric bill?
@@ -326,8 +326,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           </div>
         )}
 
-        {/* Step 3: ZIP Code */}
-        {currentStep === 3 && (
+        {/* Step 4: ZIP Code */}
+        {currentStep === 4 && (
           <div className="space-y-4">
             <label className="block text-gray-900 font-medium mb-2">
               What&apos;s your ZIP code?
@@ -360,8 +360,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
           </div>
         )}
 
-        {/* Step 4: Utility Company */}
-        {currentStep === 4 && (
+        {/* Step 2: Utility Company */}
+        {currentStep === 2 && (
           <div className="space-y-4">
             <label className="block text-gray-900 font-medium mb-4">
               Who is your electric utility company?
