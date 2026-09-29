@@ -17,11 +17,11 @@
           "Other"
         ],
         "qualification": {
-          "Ameren": "disqualified",
-          "ComEd": "disqualified",
-          "Other": "qualified"
+          "Ameren": "qualified",
+          "ComEd": "qualified",
+          "Other": "disqualified"
         },
-        "example": "Other"
+        "example": "Ameren"
       },
       "homeOwnership": {
         "type": "radio",
@@ -30,7 +30,11 @@
           "yes",
           "no"
         ],
-        "example": "yes"
+        "example": "yes",
+        "qualification": {
+          "yes": "qualified",
+          "no": "disqualified"
+        }
       },
       "electricBill": {
         "type": "radio",
@@ -156,7 +160,7 @@
     "email": "john.smith@example.com",
     "phone": "+13125551234",
     "zipCode": "60601",
-    "utilityCompany": "Other",
+    "utilityCompany": "Ameren",
     "homeOwnership": "yes",
     "electricBill": "$150 - $200",
     "pageSlug": "1",

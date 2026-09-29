@@ -1,8 +1,11 @@
+import type { DisqualificationReason } from '@/lib/lead-qualification.mjs'
+
 interface DisqualificationMessageProps {
+  reason: DisqualificationReason
   spacious?: boolean
 }
 
-export default function DisqualificationMessage({ spacious = false }: DisqualificationMessageProps) {
+export default function DisqualificationMessage({ reason, spacious = false }: DisqualificationMessageProps) {
   return (
     <div className={`bg-white rounded-lg shadow-lg border border-gray-200 text-center ${spacious ? 'p-12' : 'p-8'}`}>
       <div
@@ -15,7 +18,9 @@ export default function DisqualificationMessage({ spacious = false }: Disqualifi
         Sorry, we&apos;re not a good fit
       </h2>
       <p className="mx-auto max-w-xl text-gray-700 md:text-lg">
-        We don&apos;t currently offer service through your utility company. Thank you for your interest in Aveyo.
+        {reason === 'homeOwnership'
+          ? 'Our solar program is currently available only to homeowners. Thank you for your interest in Aveyo.'
+          : 'We currently offer service only to Ameren and ComEd customers. Thank you for your interest in Aveyo.'}
       </p>
     </div>
   )

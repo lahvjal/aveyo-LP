@@ -12,7 +12,7 @@ const validLead = {
   phone: '+12025550110',
   zipCode: '62704',
   address: '123 Test Avenue',
-  utilityCompany: 'Other',
+  utilityCompany: 'Ameren',
   homeOwnership: 'yes',
   electricBill: '$150 - $200',
   pageSlug: '1',
@@ -34,11 +34,25 @@ test('rejects a blank street address', () => {
   assert.equal(isLeadPayload({ ...validLead, address: '   ' }), false)
 })
 
-test('accepts only qualified utility-company submissions', () => {
-  assert.equal(isLeadPayload({ ...validLead, utilityCompany: 'Ameren' }), false)
-  assert.equal(isLeadPayload({ ...validLead, utilityCompany: 'ComEd' }), false)
-  assert.equal(isLeadPayload({ ...validLead, utilityCompany: 'Other' }), true)
-})
+for (const utilityCompany of ['Ameren', 'ComEd']) {
+  test(`accepts a homeowner with ${utilityCompany}`, () => {
+    assert.equal(isLeadPayload({ ...validLead, utilityCompany }), true)
+  })
+}
+
+for (const utilityCompany of ['Other', '', 'Unknown']) {
+  test(`rejects an unsupported or missing utility: ${JSON.stringify(utilityCompany)}`, () => {
+    assert.equal(isLeadPayload({ ...validLead, utilityCompany }), false)
+  })
+}
+
+for (const homeOwnership of ['no', '', 'unknown']) {
+  for (const utilityCompany of ['Ameren', 'ComEd', 'Other']) {
+    test(`rejects home ownership ${JSON.stringify(homeOwnership)} with ${utilityCompany}`, () => {
+      assert.equal(isLeadPayload({ ...validLead, homeOwnership, utilityCompany }), false)
+    })
+  }
+}
 
 test('normalizes GHL address and postal-code aliases', () => {
   const payload = buildGoHighLevelLeadPayload(
@@ -50,7 +64,7 @@ test('normalizes GHL address and postal-code aliases', () => {
   assert.equal(payload.address1, '123 Test Avenue')
   assert.equal(payload.zipCode, '62704')
   assert.equal(payload.postalCode, '62704')
-  assert.equal(payload.utilityCompany, 'Other')
+  assert.equal(payload.utilityCompany, 'Ameren')
   assert.equal(payload.submittedAt, '2026-08-14T12:00:00.000Z')
   assert.equal('city' in payload, false)
   assert.equal('state' in payload, false)

@@ -4,6 +4,7 @@ import { useState, FormEvent, useEffect } from 'react'
 import Image from 'next/image'
 import { trackLead } from '@/lib/meta-pixel'
 import { submitLead } from '@/lib/lead-submission'
+import { getDisqualificationReason, isQualifiedLead } from '@/lib/lead-qualification.mjs'
 import ConsentCheckbox from '@/components/ConsentCheckbox'
 import DisqualificationMessage from '@/components/DisqualificationMessage'
 
@@ -46,7 +47,7 @@ export default function Page3() {
     fbclid: ''
   })
   const [submitted, setSubmitted] = useState(false)
-  const [disqualified, setDisqualified] = useState(false)
+  const disqualificationReason = getDisqualificationReason(formData)
   const [consentToContact, setConsentToContact] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
@@ -72,18 +73,10 @@ export default function Page3() {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleUtilityCompanyChange = (utilityCompany: string) => {
-    updateFormData('utilityCompany', utilityCompany)
-
-    if (utilityCompany === 'Ameren' || utilityCompany === 'ComEd') {
-      setDisqualified(true)
-    }
-  }
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
-    if (formData.utilityCompany !== 'Other' || !consentToContact || isSubmitting) {
+    if (!isQualifiedLead(formData) || !consentToContact || isSubmitting) {
       return
     }
 
@@ -138,11 +131,11 @@ export default function Page3() {
     )
   }
 
-  if (disqualified) {
+  if (disqualificationReason) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-8">
         <div className="max-w-2xl w-full">
-          <DisqualificationMessage spacious />
+          <DisqualificationMessage reason={disqualificationReason} spacious />
         </div>
       </div>
     )
@@ -218,7 +211,7 @@ export default function Page3() {
                       name="utilityCompany"
                       value={utilityCompany}
                       checked={formData.utilityCompany === utilityCompany}
-                      onChange={(e) => handleUtilityCompanyChange(e.target.value)}
+                      onChange={(e) => updateFormData('utilityCompany', e.target.value)}
                       className="sr-only"
                       required
                     />
@@ -416,7 +409,7 @@ export default function Page3() {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={formData.utilityCompany !== 'Other' || !consentToContact || isSubmitting}
+              disabled={!isQualifiedLead(formData) || !consentToContact || isSubmitting}
               className="w-full bg-gray-900 text-white py-5 rounded-xl hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg font-semibold shadow-lg"
             >
               {isSubmitting ? 'Submitting…' : 'Get My Free Quote →'}

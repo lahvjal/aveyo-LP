@@ -2,7 +2,7 @@
 
 ## Overview
 
-All three landing pages now send **the same payload structure**. Landing Pages 1 and 2 send empty strings for `address` and `city`, while Landing Page 3 sends populated values. Only users who select `"Other"` for `utilityCompany` reach submission; Ameren and ComEd selections end the flow without creating a lead.
+All three landing pages now send **the same payload structure**. Landing Pages 1 and 2 send empty strings for `address` and `city`, while Landing Page 3 sends populated values. Only homeowners (`homeOwnership: "yes"`) who select `"Ameren"` or `"ComEd"` for `utilityCompany` reach submission. Renters and users who select Other end the flow without creating a lead; the API rejects these submissions as well.
 
 ---
 
@@ -19,7 +19,7 @@ All landing pages now send the same 18 fields + timestamp (19 keys total):
   "zipCode": "60601",
   "address": "123 Main Street",
   "city": "Chicago",
-  "utilityCompany": "Other",
+  "utilityCompany": "Ameren",
   "homeOwnership": "yes",
   "electricBill": "$150 - $200",
   "pageSlug": "3",
@@ -232,8 +232,10 @@ const buildCRMPayload = (formData) => {
 - [ ] Submit form from Landing Page 1 - verify `address: ""` and `city: ""`
 - [ ] Submit form from Landing Page 2 - verify `address: ""` and `city: ""`
 - [ ] Submit form from Landing Page 3 - verify `address` and `city` have values
-- [ ] Select Ameren or ComEd on every form - verify the alternate ending appears and no API request is sent
-- [ ] Select Other on every form - verify the user can continue and `utilityCompany: "Other"` is submitted
+- [ ] Select Ameren and ComEd as a homeowner on every form - verify the user can continue and the chosen utility is submitted
+- [ ] Select Other on every form - verify the utility rejection appears and no API request is sent
+- [ ] Select No for home ownership on every form - verify the homeowner rejection appears and no API request is sent
+- [ ] POST a renter or unsupported utility directly to `/api/leads` - verify a 400 response before any CRM or conversion event
 - [ ] Check database inserts handle empty strings correctly
 - [ ] Verify CRM integration filters out empty address fields
 - [ ] Test webhook accepts consistent payload structure

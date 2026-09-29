@@ -3,6 +3,7 @@
 import { useState, FormEvent, useEffect, useRef } from 'react'
 import { trackLead, trackStepCompleted } from '@/lib/meta-pixel'
 import { submitLead } from '@/lib/lead-submission'
+import { getDisqualificationReason, isSupportedUtilityCompany } from '@/lib/lead-qualification.mjs'
 import ConsentCheckbox from '@/components/ConsentCheckbox'
 import DisqualificationMessage from '@/components/DisqualificationMessage'
 
@@ -51,7 +52,7 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
     fbclid: ''
   })
   const [submitted, setSubmitted] = useState(false)
-  const [disqualified, setDisqualified] = useState(false)
+  const disqualificationReason = getDisqualificationReason(formData)
   const [consentToContact, setConsentToContact] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
@@ -85,9 +86,9 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
   const isStepValid = (step: number): boolean => {
     switch (step) {
       case 1:
-        return formData.homeOwnership !== ''
+        return formData.homeOwnership === 'yes'
       case 2:
-        return formData.utilityCompany === 'Other'
+        return isSupportedUtilityCompany(formData.utilityCompany)
       case 3:
         return formData.electricBill !== ''
       case 4:
@@ -151,14 +152,6 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
     if (currentStep > 1) {
       syncStepToUrl(currentStep - 1)
       setCurrentStep(currentStep - 1)
-    }
-  }
-
-  const handleUtilityCompanyChange = (utilityCompany: string) => {
-    updateFormData('utilityCompany', utilityCompany)
-
-    if (utilityCompany === 'Ameren' || utilityCompany === 'ComEd') {
-      setDisqualified(true)
     }
   }
 
@@ -226,8 +219,8 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
     )
   }
 
-  if (disqualified) {
-    return <DisqualificationMessage />
+  if (disqualificationReason) {
+    return <DisqualificationMessage reason={disqualificationReason} />
   }
 
   return (
@@ -374,7 +367,7 @@ export default function MultiStepForm({ pageSlug, offerName = '' }: MultiStepFor
                     name="utilityCompany"
                     value={utilityCompany}
                     checked={formData.utilityCompany === utilityCompany}
-                    onChange={(e) => handleUtilityCompanyChange(e.target.value)}
+                    onChange={(e) => updateFormData('utilityCompany', e.target.value)}
                     className="mr-3"
                   />
                   <span className="text-gray-900">{utilityCompany}</span>

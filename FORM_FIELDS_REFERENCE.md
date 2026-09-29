@@ -13,19 +13,19 @@
 ### 2. utilityCompany
 **Type:** Radio button (single select)
 **Options:**
-- `"Ameren"` - Disqualified; the form ends without submitting a lead
-- `"ComEd"` - Disqualified; the form ends without submitting a lead
-- `"Other"` - Qualified; the user can continue
+- `"Ameren"` - Qualified; homeowners can continue
+- `"ComEd"` - Qualified; homeowners can continue
+- `"Other"` - Disqualified; the form ends without submitting a lead
 
-**Example:** "Other"
+**Example:** "Ameren"
 
 ---
 
 ### 3. homeOwnership
 **Type:** Radio button (single select)
 **Options:**
-- `"yes"` - Yes (I own my home)
-- `"no"` - No (I rent)
+- `"yes"` - Yes (I own my home); can continue with a supported utility
+- `"no"` - No (I rent); the form ends without submitting a lead
 
 **Example:** "yes"
 
@@ -157,7 +157,7 @@
 ```json
 {
   "zipCode": "60601",
-  "utilityCompany": "Other",
+  "utilityCompany": "Ameren",
   "homeOwnership": "yes",
   "electricBill": "$150 - $200",
   "email": "john.smith@example.com",
@@ -197,8 +197,8 @@ https://yourdomain.com/3?utm_source=instagram&utm_campaign=solar-awareness&utm_a
 | Field Name      | Type           | Required | Format               | Source         |
 |-----------------|----------------|----------|----------------------|----------------|
 | zipCode         | Text Input     | Yes      | 5 digits             | User Entry     |
-| utilityCompany  | Radio (3)      | Yes      | "Other" for submitted leads | User Selection |
-| homeOwnership   | Radio (2)      | Yes      | "yes" or "no"        | User Selection |
+| utilityCompany  | Radio (3)      | Yes      | "Ameren" or "ComEd" for submitted leads | User Selection |
+| homeOwnership   | Radio (2)      | Yes      | "yes" for submitted leads | User Selection |
 | electricBill    | Radio (5)      | Yes      | String ranges        | User Selection |
 | email           | Email Input    | Yes      | Email format         | User Entry     |
 | firstName       | Text Input     | Yes      | String               | User Entry     |
@@ -217,8 +217,8 @@ https://yourdomain.com/3?utm_source=instagram&utm_campaign=solar-awareness&utm_a
 
 **Notes:**
 - All fields are included in every submission
-- Selecting Ameren or ComEd immediately shows the alternate ending and does not submit a lead
-- Only users who select Other can continue and submit
+- Selecting Other or indicating that the visitor rents immediately shows the appropriate alternate ending and does not submit a lead
+- Only homeowners with Ameren or ComEd can continue and submit; the API enforces the same rules
 - Tracking fields will be empty strings ("") if not present in URL
 - Phone field automatically strips non-numeric characters
 - All forms validate data before submission

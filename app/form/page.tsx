@@ -6,6 +6,7 @@ import { useState, FormEvent, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { trackLead, trackStepCompleted } from '@/lib/meta-pixel'
 import { submitLead } from '@/lib/lead-submission'
+import { getDisqualificationReason, isSupportedUtilityCompany } from '@/lib/lead-qualification.mjs'
 import ConsentCheckbox from '@/components/ConsentCheckbox'
 import DisqualificationMessage from '@/components/DisqualificationMessage'
 
@@ -52,7 +53,7 @@ function FormContent() {
     fbclid: searchParams.get('fbclid') || ''
   })
   const [submitted, setSubmitted] = useState(false)
-  const [disqualified, setDisqualified] = useState(false)
+  const disqualificationReason = getDisqualificationReason(formData)
   const [consentToContact, setConsentToContact] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
@@ -69,9 +70,9 @@ function FormContent() {
   const isStepValid = (step: number): boolean => {
     switch (step) {
       case 1:
-        return formData.utilityCompany === 'Other'
+        return isSupportedUtilityCompany(formData.utilityCompany)
       case 2:
-        return formData.homeOwnership !== ''
+        return formData.homeOwnership === 'yes'
       case 3:
         return formData.electricBill !== ''
       case 4:
@@ -137,14 +138,6 @@ function FormContent() {
     if (currentStep > 1) {
       syncStepToUrl(currentStep - 1)
       setCurrentStep(currentStep - 1)
-    }
-  }
-
-  const handleUtilityCompanyChange = (utilityCompany: string) => {
-    updateFormData('utilityCompany', utilityCompany)
-
-    if (utilityCompany === 'Ameren' || utilityCompany === 'ComEd') {
-      setDisqualified(true)
     }
   }
 
@@ -214,11 +207,11 @@ function FormContent() {
     )
   }
 
-  if (disqualified) {
+  if (disqualificationReason) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center p-8">
         <div className="max-w-2xl w-full">
-          <DisqualificationMessage spacious />
+          <DisqualificationMessage reason={disqualificationReason} spacious />
         </div>
       </div>
     )
@@ -391,7 +384,7 @@ function FormContent() {
                         name="utilityCompany"
                         value={utilityCompany}
                         checked={formData.utilityCompany === utilityCompany}
-                        onChange={(e) => handleUtilityCompanyChange(e.target.value)}
+                        onChange={(e) => updateFormData('utilityCompany', e.target.value)}
                         className="mr-4 w-5 h-5"
                       />
                       <span className="text-gray-900 text-lg">{utilityCompany}</span>
