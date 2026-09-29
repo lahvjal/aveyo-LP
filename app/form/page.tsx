@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { trackLead, trackStepCompleted } from '@/lib/meta-pixel'
 import { submitLead } from '@/lib/lead-submission'
 import { getDisqualificationReason, isSupportedUtilityCompany } from '@/lib/lead-qualification.mjs'
+import { FORM_STEP_IDS, ZIP_STEP_ID, getFormStepIds } from '@/lib/form-steps.mjs'
 import ConsentCheckbox from '@/components/ConsentCheckbox'
 import DisqualificationMessage from '@/components/DisqualificationMessage'
 
@@ -31,7 +32,7 @@ interface FormData {
 
 function FormContent() {
   const searchParams = useSearchParams()
-  const initialZip = searchParams.get('zip') || ''
+  const [initialZip] = useState(() => searchParams.get('zip') || '')
   
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState<FormData>({
@@ -58,8 +59,11 @@ function FormContent() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const totalSteps = 8
-  const progress = (currentStep / totalSteps) * 100
+  const stepIds = getFormStepIds(initialZip)
+  const currentStepIndex = stepIds.indexOf(currentStep)
+  const totalSteps = stepIds.length
+  const finalStep = stepIds[totalSteps - 1]
+  const progress = ((currentStepIndex + 1) / totalSteps) * 100
 
   const updateFormData = (field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -93,7 +97,7 @@ function FormContent() {
   const validateStep = (): boolean => isStepValid(currentStep)
 
   const validateAllSteps = (): boolean => {
-    for (let step = 1; step <= totalSteps; step++) {
+    for (const step of FORM_STEP_IDS) {
       if (!isStepValid(step)) {
         setCurrentStep(step)
         return false
@@ -104,9 +108,11 @@ function FormContent() {
 
   // Fire each step's custom pixel event only once per session, so navigating
   // back and re-advancing doesn't inflate funnel counts in Events Manager.
-  // A zip passed in from the landing page means the zip step (4) already
-  // fired there; it stays pre-filled here.
-  const trackedStepsRef = useRef<Set<number>>(new Set(initialZip ? [4] : []))
+  // A valid ZIP from the landing page is retained in the payload, but its
+  // question and completion event must not repeat in this form.
+  const trackedStepsRef = useRef<Set<number>>(
+    new Set(stepIds.includes(ZIP_STEP_ID) ? [] : [ZIP_STEP_ID])
+  )
 
   const markStepCompleted = (step: number) => {
     if (!trackedStepsRef.current.has(step)) {
@@ -127,17 +133,19 @@ function FormContent() {
   }
 
   const nextStep = () => {
-    if (validateStep() && currentStep < totalSteps) {
-      syncStepToUrl(currentStep + 1)
+    const nextStepId = stepIds[currentStepIndex + 1]
+    if (validateStep() && nextStepId !== undefined) {
+      syncStepToUrl(nextStepId)
       markStepCompleted(currentStep)
-      setCurrentStep(currentStep + 1)
+      setCurrentStep(nextStepId)
     }
   }
 
   const prevStep = () => {
-    if (currentStep > 1) {
-      syncStepToUrl(currentStep - 1)
-      setCurrentStep(currentStep - 1)
+    const previousStepId = stepIds[currentStepIndex - 1]
+    if (previousStepId !== undefined) {
+      syncStepToUrl(previousStepId)
+      setCurrentStep(previousStepId)
     }
   }
 
@@ -150,7 +158,7 @@ function FormContent() {
 
     // Enter key on intermediate steps triggers implicit form submission;
     // advance to the next step instead of submitting early.
-    if (currentStep < totalSteps) {
+    if (currentStep !== finalStep) {
       nextStep()
       return
     }
@@ -182,7 +190,7 @@ function FormContent() {
         }
 
         const result = await submitLead(payload)
-        markStepCompleted(totalSteps)
+        markStepCompleted(finalStep)
         trackLead(formData.pageSlug, formData.offerName, result.eventId)
         setSubmitted(true)
       } catch (error) {
@@ -241,7 +249,7 @@ function FormContent() {
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
-            <p className="text-sm text-gray-600 mt-2">Step {currentStep} of {totalSteps}</p>
+            <p className="text-sm text-gray-600 mt-2">Step {currentStepIndex + 1} of {totalSteps}</p>
           </div>
 
           <form onSubmit={handleSubmit}>
